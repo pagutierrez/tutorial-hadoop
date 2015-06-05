@@ -16,16 +16,20 @@ La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros 
 
 ### Instalación utilizando VirtualBox
 
-1. [Descarga](https://www.virtualbox.org/wiki/Downloads) e instala VirtualBox en tu equipo.
+1. [Descarga](https://www.virtualbox.org/wiki/Downloads) e instala *VirtualBox* en tu equipo.
 
 2. [Descarga](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html) la última versión de la máquina virtual de Cloudera.
 
-3. Descomprime la máquina virtual. Está comprimida con 7zip (puede que necesites [instalarlo](http://www.7-zip.org/)).
+3. Descomprime la máquina virtual. Está comprimida con *7zip* (puede que necesites [instalarlo](http://www.7-zip.org/)).
+
+4. Arranca *VirtualBox* y selecciona "Importar servicio virtualizado". Selecciona el archivo OVF ya descomprimido.
+
+5. Una vez terminada la importación (que tardará un rato), debería aparecer la máquina virtual. Vamos a configurar *VirtualBox* para que se cree una red de "solo-anfitrión". `Archivo->Preferencias->Red->Redes solo-anfitrión`. 
 
 ## Referencias
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
 
 1. [Introducción a la programación MapReduce en Hadoop](http://laurel.datsi.fi.upm.es/docencia/asignaturas/ppd). Universidad Politécnica de Madrid (UPM).
-rete
+
 2. [Hadoop Tutorial](http://web.stanford.edu/class/cs246/homeworks/tutorial.pdf) Stanford University.
 
