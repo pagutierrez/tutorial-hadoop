@@ -223,14 +223,14 @@ import java.util.regex.Pattern;
 
 Esta clase extenderá a la clase `Configured` e implementa la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación MapReduce:
 ```java
-    import org.apache.hadoop.conf.Configured;
-    import org.apache.hadoop.util.Tool;
-    import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 ```
 
 La clase `Logger` manda mensajes de depuración desde las clases **map** y **reduce**. Cuando ejecutas la aplicación, uno de los mensajes estándar de información proporciona la URL que permite rastrear la ejecución del trabajo. Cualquier mensaje pasado al `Logger` se muestra los logs del map o del reduce de tu servidor Hadoop.
 ```java
-    import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 ```
 
 Necesitas las clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación MapReduce. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
@@ -255,19 +255,24 @@ import org.apache.hadoop.io.Text;
 ```
 
 [WordCount.java](code/ejemplo3/WordCount.java) incluye los métodos `main` y `run` y las clases internas `MiMap` y `MiReduce`.
-
+```java
 public class WordCount extends Configured implements Tool {
 
    private static final Logger LOG = Logger .getLogger( WordCount .class);
-The main method invokes ToolRunner, which creates and runs a new instance of WordCount, passing the command line arguments. When the application is finished, it returns an integer value for the status, which is passed to the System object on exit.
+```
 
+El método `main` invoca al `ToolRunner`, que crea y ejecuta una nueva instancia de `WordCount`, pasándole los argumentos de la línea de comandos. Cuando la aplicación ya ha terminado, devuelve un valor entero de estado de terminación, que se pasa al objeto `System` al salir.
+```java
 public static void main( String[] args) throws  Exception {
      int res  = ToolRunner .run( new WordCount(), args);
      System .exit(res);
   }
-The run method configures the job (which includes setting paths passed in at the command line), starts the job, waits for the job to complete, and then returns a Boolean success flag.
+```
 
+El método `run` configura el trabajo (lo que incluye establecer las rutas pasadas por la línea de comandos), comienza el trabajo, espera a que el trabajo termine y devuelve un valor booleano de éxito:
+```java
 public int run( String[] args) throws  Exception {
+
 Create a new instance of the Job object. This example uses the Configured.getConf() method to get the configuration object for this instance of WordCount, and names the job object wordcount.
 
 Job job  = Job .getInstance(getConf(), " wordcount ");
