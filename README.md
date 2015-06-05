@@ -65,9 +65,11 @@ Para entender mejor el modo de operación de MapReduce, comenzamos desarrollando
     	}
     }
 Crea un directorio (por ejemplo, `input`) con varios ficheros de texto y pruebe a compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, donde quedará la salida del trabajo:
+
     javac  -cp `hadoop classpath` *.java  # compilar
     jar cvf Null.jar *.class # crear el JAR
     hadoop jar Null.jar Null input output # nombre del JAR, de la clase principal y args del programa
+
 Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. ¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
 
 Al especificar un trabajo *MapReduce* tenemos que incluir los siguientes elementos:
