@@ -277,7 +277,8 @@ El método `run` configura el trabajo (lo que incluye establecer las rutas pasad
 Creamos una nueva instancia del objeto `Job`. En este ejemplo utilizamos el método `Configured.getConf()` el objeto de configuración para esta instancia de `WordCount`, y nombramos el objeto del trabajo 'miwordcount':
 ```java
     Job job = Job.getInstance(getConf(), "miwordcount");
-    
+```
+
 Establecer el `jar`, basándonos en la clase en uso:
 ```java
     job.setJarByClass(this.getClass());
