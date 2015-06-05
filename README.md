@@ -72,6 +72,7 @@ Echa un vistazo al contenido del directorio de salida, donde, entre otros, habr�
 
 Al especificar un trabajo *MapReduce* tenemos que incluir los siguientes elementos:
 - `job.setInputFormatClass(TextInputFormat.class);`
+
 Esto especifica el formato de entrada. En este caso, hemos usado `TextInputFormat` que es una clase que representa datos de tipo texto y que considera cada línea del fichero como un registro invocando, por tanto, la función **map** del programa por cada línea. Al invocar a **map**, le pasaremos como clave el *offset* (desplazamiento) dentro del fichero correspondiente al principio de la línea. El tipo de la clave será `LongWritable`: `Writable` es el tipo *serializable* que usa *MapReduce* para gestionar todos los datos, que en este caso son de tipo `long`. Como valor, al invocar a **map** pasaremos el contenido de la línea (de tipo `Text`, la versión `Writable` de un `String`).
 - `job.setMapperClass(Mapper.class);`
 Es un Mapper identidad, que simplemente copia la clave y el valor recibido.
