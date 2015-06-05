@@ -28,12 +28,27 @@ La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros 
 
 6. Finalmente, arranca la máquina virtual (*paciencia*). Una vez arrancada, deberíamos poder acceder desde el anfitrión a la dirección [http://localhost:8088](http://localhost:8088), dónde podremos ver la interfaz del administrador de recursos. Podrás ver varios que éste y varios puertos está redirigidos por NAT en el Adaptador 1 de tu máquina virtual.
 
+7. El usuario y contraseña por defecto para Cloudera es:
+- User: `cloudera`
+- Password: `cloudera`
+
 La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstart-vm-5.4.0-0-virtualbox`):
 
 - CentOS 6.4
 - JDK (1.7.0_67).
 - Hadoop 2.6.0.
 - Eclise 4.2.6 (Juno).
+
+## Manejo del HDFS
+
+El sistema de ficheros de Hadoop (HDFS) se puede manejar a través de tres interfaces:
+
+1. Interfaz de línea de comandos, mediante el comando `hadoop fs [opciones]`.
+
+2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de [http://localhost:50070/](http://localhost:50070/). Ahí podrás ver los ficheros creados y 
+
+3. API de programación.
+
 
 ## El MapReduce nulo
 
