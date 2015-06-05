@@ -575,7 +575,7 @@ hadoop jar wordcount.jar master.sd.WordCount -Dwordcount.mayusculas.sensible=tru
 
 ### MostFrequentNextWord
 
-El fichero [MostFrequentNextWord.java]
+El fichero [MostFrequentNextWord.java](code/ejemplo5/MostFrequentNextWord.java)
 
 ## Ejercicio 2
 
