@@ -45,17 +45,17 @@ La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
 
 | Comando | Acción
 | --------|---------
-| hadoop fs -ls <path> | Lista ficheros |
-| hadoop fs -cp <src> <dst> | Copia ficheros HDFS a HDFS
-| hadoop fs -mv <src> <dst> | Mueve ficheros HDFS a HDFS |
-| hadoop fs -rm <path> | Borra ficheros en HDFS |
-| hadoop fs -rmr <path> | Borra recursivamente |
-| hadoop fs -cat <path> | Muestra fichero en HDFS |
-| hadoop fs -mkdir <path> | Crea directorio en HDFS |
-| hadoop fs -chmod ... | Cambia permisos de fichero |
-| hadoop fs -chown ... | Cambia propietario/grupo de fichero |
-| hadoop fs -put <local> <dst> | Copia de local a HDFS |
-| hadoop fs -get <src> <local> | Copia de HDFS a local |
+| `hadoop fs -ls <path>` | Lista ficheros |
+| `hadoop fs -cp <src> <dst>` | Copia ficheros HDFS a HDFS
+| `hadoop fs -mv <src> <dst>` | Mueve ficheros HDFS a HDFS |
+| `hadoop fs -rm <path>` | Borra ficheros en HDFS |
+| `hadoop fs -rmr <path>` | Borra recursivamente |
+| `hadoop fs -cat <path>` | Muestra fichero en HDFS |
+| `hadoop fs -mkdir <path>` | Crea directorio en HDFS |
+| `hadoop fs -chmod ...` | Cambia permisos de fichero |
+| `hadoop fs -chown ...` | Cambia propietario/grupo de fichero |
+| `hadoop fs -put <local> <dst>` | Copia de local a HDFS |
+| `hadoop fs -get <src> <local>` | Copia de HDFS a local |
 
 
 ## El MapReduce nulo
@@ -87,13 +87,43 @@ Para entender mejor el modo de operación de MapReduce, comenzamos desarrollando
     		System.exit(job.waitForCompletion(true) ? 0 : 1);
     	}
     }
-Crea un directorio (por ejemplo, `input`) con varios ficheros de texto y pruebe a compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, donde quedará la salida del trabajo:
+    
+Lo primero que debes de hacer es crear un directorio, utilizando el CLI de HDFS. Abre una terminal en la máquina virtual (o conéctate por SSH) y escribe:
+
+    hadoop fs -mkdir input
+
+El directorio de trabajo por defecto para este usuario es `\users\cloudera`. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros en local (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
+
+    hadoop fs -put f*.txt input/
+
+Comprueba como ha quedado el sistema de ficheros a través de [http://localhost:50070/](http://localhost:50070/).
+
+Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, donde quedará la salida del trabajo:
 
     javac  -cp `hadoop classpath` *.java  # compilar
     jar cvf Null.jar *.class # crear el JAR
     hadoop jar Null.jar Null input output # nombre del JAR, de la clase principal y args del programa
 
-Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. ¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
+Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. 
+
+    [cloudera@quickstart ejemplo1]$ hadoop fs -ls output
+    Found 2 items
+    -rw-r--r--   1 cloudera cloudera          0 2015-06-05 04:15 output/_SUCCESS
+    -rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
+    [cloudera@quickstart ejemplo1]$ hadoop fs -ls output/part-r-00000
+    -rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
+    [cloudera@quickstart ejemplo1]$ hadoop fs -cat output/part-r-00000
+    0	sadfsadf
+    0	asdfasfd
+    9	asdfasdf
+    9	qwerqwer
+    18	qwerwqer
+    18	qwer qwer
+    27	
+    28	
+    
+
+¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
 
 Al especificar un trabajo *MapReduce* tenemos que incluir los siguientes elementos:
 
