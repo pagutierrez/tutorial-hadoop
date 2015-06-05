@@ -258,45 +258,56 @@ import org.apache.hadoop.io.Text;
 ```java
 public class WordCount extends Configured implements Tool {
 
-   private static final Logger LOG = Logger .getLogger( WordCount .class);
+  private static final Logger LOG = Logger.getLogger(WordCount.class);
 ```
 
 El método `main` invoca al `ToolRunner`, que crea y ejecuta una nueva instancia de `WordCount`, pasándole los argumentos de la línea de comandos. Cuando la aplicación ya ha terminado, devuelve un valor entero de estado de terminación, que se pasa al objeto `System` al salir.
 ```java
-public static void main( String[] args) throws  Exception {
-     int res  = ToolRunner .run( new WordCount(), args);
-     System .exit(res);
+  public static void main(String[] args) throws Exception {
+    int res = ToolRunner.run(new WordCount(), args);
+    System.exit(res);
   }
 ```
 
 El método `run` configura el trabajo (lo que incluye establecer las rutas pasadas por la línea de comandos), comienza el trabajo, espera a que el trabajo termine y devuelve un valor booleano de éxito:
 ```java
-public int run( String[] args) throws  Exception {
+  public int run(String[] args) throws Exception {
+```
 
-Create a new instance of the Job object. This example uses the Configured.getConf() method to get the configuration object for this instance of WordCount, and names the job object wordcount.
+Creamos una nueva instancia del objeto `Job`. En este ejemplo utilizamos el método `Configured.getConf()` el objeto de configuración para esta instancia de `WordCount`, y nombramos el objeto del trabajo 'miwordcount':
+```java
+    Job job = Job.getInstance(getConf(), "miwordcount");
+    
+Establecer el `jar`, basándonos en la clase en uso:
+```java
+    job.setJarByClass(this.getClass());
+```
 
-Job job  = Job .getInstance(getConf(), " wordcount ");
-Set the jar to use, based on the class in use.
+Establecer las rutas de entrada y salida para la aplicación. Los ficheros de entrada se guardan en el HDFS y sus rutas se pasan por línea de comandos en tiempo de ejecución:
+```java
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+```
 
-job.setJarByClass( this .getClass());
-Set the input and output paths for your application. You store your input files in HDFS, and then pass the input and output paths as command-line arguments at run time.
+Establecer la clase para el **map** y para el **reduce**. En este caso, utilizaremos las clases internas MiMap y MiReduce definidas en la clase:
+```java
+    job.setMapperClass(MiMap.class);
+    job.setReducerClass(MiReduce.class);
+```
+Utilizamos un objeto `Text` para crear la salida de la clave (palabra que estamos contando) y un `IntWritable` para el valor (número de veces que aparece la palabra):
+```java
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+```
 
-FileInputFormat.addInputPaths(job,  new Path(args[ 0]));
-     FileOutputFormat.setOutputPath(job,  new Path(args[ 1]));
-Set the map class and reduce class for the job. In this case, use the Map and Reduce inner classes defined in this class.
+Lanzar el trabajo y esperar a que termine. La sintaxis del método es `waitForCompletion(boolean verbose)`. Si pasamos un `true`, el método muestra el progreso de los **map** y **reduce** durante su ejecución. Si pasamos `false`, muestra el progreso hasta que se ejecutan los **map** y **reduce**, pero no después.
 
-    job.setMapperClass( Map .class);
-    job.setReducerClass( Reduce .class);
-Use a Text object to output the key (in this case, the word being counted) and the value (in this case, the number of times the word appears).
+En Unix, 0 indica éxito y cualquier otra cosa un fallo. Cuando el trabajo termina correctamente, el método devuelve un 0. Cuando falla devuelve un 1:
+```java
+    return job.waitForCompletion(true) ? 0 : 1;
+```
 
-    job.setOutputKeyClass( Text .class);
-    job.setOutputValueClass( IntWritable .class);
-Launch the job and wait for it to finish. The method syntax iswaitForCompletion(boolean verbose). When true, the method reports its progress as the Map and Reduce classes run. When false, the method reports progress up to, but not including, the Map and Reduce processes.
-
-In Unix, 0 indicates success, and anything other than 0 indicates a failure. When the job completes successfully, the method returns 0. When it fails, it returns 1.
-
-return job.waitForCompletion( true)  ? 0 : 1;
-  }
+La clase MiMap (que es una extensión de `Mapper`)
 The Map class (an extension of Mapper) transforms key/value input into intermediate key/value pairs to be sent to the Reducer. The class defines several global variables, starting with an IntWritable for the value 1, and a Text object used to store each word as it is parsed from the input string.
 
 public static class Map extends Mapper<LongWritable ,  Text ,  Text ,  IntWritable > {
