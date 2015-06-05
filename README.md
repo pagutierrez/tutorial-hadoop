@@ -108,7 +108,7 @@ Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y
     hadoop jar Null.jar Null input output # nombre del JAR, de la clase principal y args del programa
 
 Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. 
-
+```bash
     [cloudera@quickstart ejemplo1]$ hadoop fs -ls output
     Found 2 items
     -rw-r--r--   1 cloudera cloudera          0 2015-06-05 04:15 output/_SUCCESS
@@ -124,7 +124,7 @@ Echa un vistazo al contenido del directorio de salida, donde, entre otros, habr�
     18	qwer qwer
     27	
     28	
-    
+```
 
 ¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
 
