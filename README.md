@@ -37,7 +37,7 @@ La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstar
 
 ## El MapReduce nulo
 
-Para entender mejor el modo de operación de MapReduce, comenzamos desarrollando un programa [Null.java](Null.java) que, en principio, no hace nada, dejando, por tanto, que se ejecute un trabajo *MapReduce* con todos sus parámetros por defecto:
+Para entender mejor el modo de operación de MapReduce, comenzamos desarrollando un programa [`Null.java`](code/ejemplo1/Null.java) que, en principio, no hace nada, dejando, por tanto, que se ejecute un trabajo *MapReduce* con todos sus parámetros por defecto:
     import java.io.IOException;
     
     import org.apache.hadoop.fs.Path;
@@ -75,59 +75,78 @@ Al especificar un trabajo *MapReduce* tenemos que incluir los siguientes element
 > job.setInputFormatClass(TextInputFormat.class);
 
 Esto especifica el formato de entrada. En este caso, hemos usado `TextInputFormat` que es una clase que representa datos de tipo texto y que considera cada línea del fichero como un registro invocando, por tanto, la función **map** del programa por cada línea. Al invocar a **map**, le pasaremos como clave el *offset* (desplazamiento) dentro del fichero correspondiente al principio de la línea. El tipo de la clave será `LongWritable`: `Writable` es el tipo *serializable* que usa *MapReduce* para gestionar todos los datos, que en este caso son de tipo `long`. Como valor, al invocar a **map** pasaremos el contenido de la línea (de tipo `Text`, la versión `Writable` de un `String`).
-- `job.setMapperClass(Mapper.class);`
-Es un Mapper identidad, que simplemente copia la clave y el valor recibido.
-job.setMapOutputKeyClass(LongWritable.class);
-El tipo de datos de la clave generada por map. Dado que la función map usada copia la clave recibida, es de tipo LongWritable.
-job.setMapOutputValueClass(Text.class);
-El tipo de datos del valor generado por map. Dado que la función map usada copia el valor recibido, es de tipo Text.
-job.setPartitionerClass(HashPartitioner.class);
-Es la clase que realiza la asignación de claves a reducers, usando una función hash para ello.
-job.setNumReduceTasks(1);
-Sólo usa un Reducer; por eso, hay un único fichero en el directorio de salida.
-job.setReducerClass(Reducer.class);
-Es un Reducer identidad, que simplemente copia la clave y el valor recibido.
-job.setOutputKeyClass(LongWritable.class);
-El tipo de datos de la clave generada por reduce y por map excepto si se ha especificado uno distinto para map usando setMapOutputKeyClass. Dado que la función reduce usada copia la clave recibida, es de tipo LongWritable.
-job.setOutputValueClass(Text.class);
-El tipo de datos del valor generado por reduce y por map excepto si se ha especificado uno distinto para map usando setMapValueKeyClass. Dado que la función reduce usada copia el valor recibido, es de tipo Text.
-job.setOutputFormatClass(TextOutputFormat.class);
-Este formato de salida es de tipo texto y consiste en la clave y el valor separados, por defecto, por un tabulador (para pasar a texto los valores generados por reduce, el entorno de ejecución invoca el método toString de los respectivas clases Writables).
-Se sugiere al lector que modifique el código de Null.java para especificar dos reducers y lo ejecute analizando la salida producida por el programa.
 
-Para terminar esta primera toma de contacto, hay que explicar que el mandato hadoop gestiona sus propios argumentos de línea (veremos un ejemplo en la siguiente sección) y, por tanto, es necesario separar dentro de los argumentos de línea aquellos que corresponden a Hadoop y los que van destinados a la aplicación. La clase Tool facilita este trabajo. A continuación, se presenta la nueva versión de la clase Null.java usando este mecanismo.
+> job.setMapperClass(Mapper.class);
 
-import java.io.IOException;
+Esto especifica cuál es la clase utilizada para el **map**. En este caso, utilizamos el Map identidad, que simplemente copia lo que llega a la salida (sin modificarlo).
 
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+> job.setMapOutputKeyClass(LongWritable.class);
 
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
-import org.apache.hadoop.conf.Configured;
+Este es el tipo de datos de la clave generada por **map**. Dado que la función **map** usada copia la clave recibida, es de tipo `LongWritable`.
 
-public class Null extends Configured implements Tool {
-	public int run(String[] args) throws Exception {
-		if (args.length != 2) {
-      			System.err.println("Usage: null in out");
-			System.exit(2);
-		}
-                Job job = Job.getInstance(getConf()); // le pasa la config.
+> job.setMapOutputValueClass(Text.class);
 
-		job.setJarByClass(getClass()); // pequeño cambio
+El tipo de datos del valor generado por **map**. Dado que la función map usada copia el valor recibido, es de tipo `Text`.
 
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-    		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		return job.waitForCompletion(true) ? 0 : 1;
-	}
+> job.setPartitionerClass(HashPartitioner.class);
 
-	public static void main(String[] args) throws Exception {
-		int resultado = ToolRunner.run(new Null(), args);
-		System.exit(resultado);
-	}
-}
+Esta clase es la que vamos a utilizar para realizar las particiones (decidir que *reduce* se le asigna a cada clave. Por defecto, utilizamos el basado en hash (`hash(key) mod R`).
+
+> job.setNumReduceTasks(1);
+
+Sólo vamos a utilizar un reducer, por eso generamos un solo fichero de salida.
+
+> job.setReducerClass(Reducer.class);
+
+Con esto se especifica la clase del reducer. En este caso, utilizamos el Reducer identidad, que copia los pares `<clave,valor>` que llegan al fichero de salida.
+
+> job.setOutputKeyClass(LongWritable.class);
+
+El tipo de datos de la clave generada por **reduce** y por **map**, excepto si se ha especificado uno distinto para **map** usando `setMapOutputKeyClass`. Dado que la función reduce usada copia la clave recibida, es de tipo `LongWritable`.
+
+> job.setOutputValueClass(Text.class);
+
+El tipo de datos del valor generado por **reduce** y por **map** excepto si se ha especificado uno distinto para **map** usando `setMapValueKeyClass`. Dado que la función reduce usada copia el valor recibido, es de tipo Text.
+
+> job.setOutputFormatClass(TextOutputFormat.class);
+
+Este formato de salida es de tipo texto y consiste en la clave y el valor separados, por defecto, por un tabulador (para pasar a texto los valores generados por reduce, el entorno de ejecución invoca el método `toString` de las respectivas clases `Writable`).
+
+Modifica el código de `Null.java` para especificar dos *reducers* y ejecútalo analizando la salida producida por el programa.
+
+Para terminar esta primera toma de contacto, hay que explicar que el mandato hadoop gestiona sus propios argumentos de la línea de comandos (veremos un ejemplo en la siguiente sección). Es necesario separar dentro de los argumentos de la línea de comandos aquellos que corresponden a Hadoop y los que van destinados a la aplicación. La clase `Tool` facilita este trabajo. A continuación, se presenta la nueva versión de la clase [`Null.java`](code/ejemplo2/Null.java) usando este mecanismo.
+
+    import java.io.IOException;
+    
+    import org.apache.hadoop.fs.Path;
+    import org.apache.hadoop.mapreduce.Job;
+    import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+    import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+    
+    import org.apache.hadoop.util.Tool;
+    import org.apache.hadoop.util.ToolRunner;
+    import org.apache.hadoop.conf.Configured;
+    
+    public class Null extends Configured implements Tool {
+    	public int run(String[] args) throws Exception {
+    		if (args.length != 2) {
+          			System.err.println("Usage: null in out");
+    			System.exit(2);
+    		}
+                    Job job = Job.getInstance(getConf()); // le pasa la config.
+    
+    		job.setJarByClass(getClass()); // pequeño cambio
+    
+    		FileInputFormat.addInputPath(job, new Path(args[0]));
+        		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    		return job.waitForCompletion(true) ? 0 : 1;
+    	}
+    
+    	public static void main(String[] args) throws Exception {
+    		int resultado = ToolRunner.run(new Null(), args);
+    		System.exit(resultado);
+    	}
+    }
 
 
 ## Referencias
