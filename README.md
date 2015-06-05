@@ -62,33 +62,35 @@ La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
 ## El MapReduce nulo
 
 Para entender mejor el modo de operación de MapReduce, comenzamos desarrollando un programa [`Null.java`](code/ejemplo1/Null.java) que, en principio, no hace nada, dejando, por tanto, que se ejecute un trabajo *MapReduce* con todos sus parámetros por defecto:
-    import java.io.IOException;
-    
-    import org.apache.hadoop.fs.Path;
-    import org.apache.hadoop.mapreduce.Job;
-    import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-    import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-    
-    public class Null {
-    	public static void main(String[] args) throws Exception {
-    		if (args.length != 2) {
-          			System.err.println("Uso: null in out");
-    			System.exit(2);
-    		}
-    		// Crea un trabajo MapReduce
-    		Job job = Job.getInstance(); 
-    		// Especifica el JAR del mismo
-    		job.setJarByClass(Null.class);
-    
-    		// Especifica directorio de entrada y de salida
-    		FileInputFormat.addInputPath(job, new Path(args[0]));
-            FileOutputFormat.setOutputPath(job, new Path(args[1]));
-    
-    		// Arranca el trabajo y espera que termine
-    		System.exit(job.waitForCompletion(true) ? 0 : 1);
-    	}
-    }
-    
+```java
+import java.io.IOException;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class Null {
+	public static void main(String[] args) throws Exception {
+		if (args.length != 2) {
+  			System.err.println("Uso: null in out");
+			System.exit(2);
+		}
+		// Crea un trabajo MapReduce
+		Job job = Job.getInstance(); 
+		// Especifica el JAR del mismo
+		job.setJarByClass(Null.class);
+
+		// Especifica directorio de entrada y de salida
+		FileInputFormat.addInputPath(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+		// Arranca el trabajo y espera que termine
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
+	}
+}
+```
+
 Lo primero que debes de hacer es crear un directorio, utilizando el CLI de HDFS. Abre una terminal en la máquina virtual (o conéctate por SSH) y escribe:
 
     hadoop fs -mkdir input
@@ -172,37 +174,39 @@ Modifica el código de `Null.java` para especificar dos *reducers* y ejecútalo 
 
 Para terminar esta primera toma de contacto, hay que explicar que el mandato hadoop gestiona sus propios argumentos de la línea de comandos (veremos un ejemplo en la siguiente sección). Es necesario separar dentro de los argumentos de la línea de comandos aquellos que corresponden a Hadoop y los que van destinados a la aplicación. La clase `Tool` facilita este trabajo. A continuación, se presenta la nueva versión de la clase [`Null.java`](code/ejemplo2/Null.java) usando este mecanismo.
 
-    import java.io.IOException;
-    
-    import org.apache.hadoop.fs.Path;
-    import org.apache.hadoop.mapreduce.Job;
-    import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-    import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-    
-    import org.apache.hadoop.util.Tool;
-    import org.apache.hadoop.util.ToolRunner;
-    import org.apache.hadoop.conf.Configured;
-    
-    public class Null extends Configured implements Tool {
-    	public int run(String[] args) throws Exception {
-    		if (args.length != 2) {
-          		System.err.println("Usage: null in out");
-    			System.exit(2);
-    		}
-            Job job = Job.getInstance(getConf()); // le pasa la config.
-    
-    		job.setJarByClass(getClass()); // pequeño cambio
-    
-    		FileInputFormat.addInputPath(job, new Path(args[0]));
-            FileOutputFormat.setOutputPath(job, new Path(args[1]));
-    		return job.waitForCompletion(true) ? 0 : 1;
-    	}
-    
-    	public static void main(String[] args) throws Exception {
-    		int resultado = ToolRunner.run(new Null(), args);
-    		System.exit(resultado);
-    	}
-    }
+```java
+import java.io.IOException;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.conf.Configured;
+
+public class Null extends Configured implements Tool {
+	public int run(String[] args) throws Exception {
+		if (args.length != 2) {
+  			System.err.println("Usage: null in out");
+			System.exit(2);
+		}
+		Job job = Job.getInstance(getConf()); // le pasa la config.
+
+		job.setJarByClass(getClass()); // pequeño cambio
+
+		FileInputFormat.addInputPath(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		return job.waitForCompletion(true) ? 0 : 1;
+	}
+
+	public static void main(String[] args) throws Exception {
+		int resultado = ToolRunner.run(new Null(), args);
+		System.exit(resultado);
+	}
+}
+```
 
 ## ¡Hola mundo! en Hadoop
 
