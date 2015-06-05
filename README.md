@@ -17,20 +17,14 @@ La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros 
 ### Instalación utilizando VirtualBox
 
 1. [Descarga](https://www.virtualbox.org/wiki/Downloads) e instala *VirtualBox* en tu equipo.
-
 2. [Descarga](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html) la última versión de la máquina virtual de Cloudera.
-
 3. Descomprime la máquina virtual. Está comprimida con *7zip* (puede que necesites [instalarlo](http://www.7-zip.org/)).
-
 4. Arranca *VirtualBox* y selecciona "Importar servicio virtualizado". Selecciona el archivo OVF ya descomprimido.
-
 5. Una vez terminada la importación (que tardará un rato), debería aparecer la máquina virtual. Vamos a configurar *VirtualBox* para que se cree una red de "solo-anfitrión". `Archivo->Preferencias->Red->Redes solo-anfitrión`. Añádela con los parámetros por defecto. Después, configuramos la máquina virtual para que la use `Botón derecho->Configuración->Red->Adaptador2->Habilitar->Conectado a -> Adaptador solo anfitrión`. De esta forma, podremos acceder por `ssh` a nuestro máquina virtual (utilizando `ssh` o `putty`) a través de la dirección `192.168.56.101`. 
-
 6. Finalmente, arranca la máquina virtual (*paciencia*). Una vez arrancada, deberíamos poder acceder desde el anfitrión a la dirección [http://localhost:8088](http://localhost:8088), dónde podremos ver la interfaz del administrador de recursos. Podrás ver varios que éste y varios puertos está redirigidos por NAT en el Adaptador 1 de tu máquina virtual.
-
 7. El usuario y contraseña por defecto para Cloudera es:
-- User: `cloudera`
-- Password: `cloudera`
+    - User: `cloudera`
+    - Password: `cloudera`
 
 La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstart-vm-5.4.0-0-virtualbox`):
 
@@ -44,10 +38,24 @@ La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstar
 El sistema de ficheros de Hadoop (HDFS) se puede manejar a través de tres interfaces:
 
 1. Interfaz de línea de comandos, mediante el comando `hadoop fs [opciones]`.
-
 2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de [http://localhost:50070/](http://localhost:50070/). Ahí podrás ver los ficheros creados y 
-
 3. API de programación.
+
+La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
+
+| Comando | Acción
+| --------|---------
+| hadoop fs -ls <path> | Lista ficheros |
+| hadoop fs -cp <src> <dst> | Copia ficheros HDFS a HDFS
+| hadoop fs -mv <src> <dst> | Mueve ficheros HDFS a HDFS |
+| hadoop fs -rm <path> | Borra ficheros en HDFS |
+| hadoop fs -rmr <path> | Borra recursivamente |
+| hadoop fs -cat <path> | Muestra fichero en HDFS |
+| hadoop fs -mkdir <path> | Crea directorio en HDFS |
+| hadoop fs -chmod ... | Cambia permisos de fichero |
+| hadoop fs -chown ... | Cambia propietario/grupo de fichero |
+| hadoop fs -put <local> <dst> | Copia de local a HDFS |
+| hadoop fs -get <src> <local> | Copia de HDFS a local |
 
 
 ## El MapReduce nulo
