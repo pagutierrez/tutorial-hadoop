@@ -573,7 +573,9 @@ Si queremos que sea sensible a mayúsculas podemos utilizar:
 hadoop jar wordcount.jar master.sd.WordCount -Dwordcount.mayusculas.sensible=true input output
 ```
 
-### WordCount V3
+### MostFrequentNextWord
+
+El fichero [MostFrequentNextWord.java]
 
 ## Ejercicio 2
 
