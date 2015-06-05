@@ -109,21 +109,21 @@ Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y
 
 Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. 
 ```bash
-    [cloudera@quickstart ejemplo1]$ hadoop fs -ls output
-    Found 2 items
-    -rw-r--r--   1 cloudera cloudera          0 2015-06-05 04:15 output/_SUCCESS
-    -rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
-    [cloudera@quickstart ejemplo1]$ hadoop fs -ls output/part-r-00000
-    -rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
-    [cloudera@quickstart ejemplo1]$ hadoop fs -cat output/part-r-00000
-    0	sadfsadf
-    0	asdfasfd
-    9	asdfasdf
-    9	qwerqwer
-    18	qwerwqer
-    18	qwer qwer
-    27	
-    28	
+[cloudera@quickstart ejemplo1]$ hadoop fs -ls output for
+Found 2 items
+-rw-r--r--   1 cloudera cloudera          0 2015-06-05 04:15 output/_SUCCESS
+-rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
+[cloudera@quickstart ejemplo1]$ hadoop fs -ls output/part-r-00000
+-rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
+[cloudera@quickstart ejemplo1]$ hadoop fs -cat output/part-r-00000
+0	sadfsadf
+0	asdfasfd
+9	asdfasdf
+9	qwerqwer
+18	qwerwqer
+18	qwer qwer
+27	
+28	
 ```
 
 ¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
