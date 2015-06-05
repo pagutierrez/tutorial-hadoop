@@ -308,47 +308,194 @@ En Unix, 0 indica éxito y cualquier otra cosa un fallo. Cuando el trabajo termi
     return job.waitForCompletion(true) ? 0 : 1;
 ```
 
-La clase MiMap (que es una extensión de `Mapper`)
-The Map class (an extension of Mapper) transforms key/value input into intermediate key/value pairs to be sent to the Reducer. The class defines several global variables, starting with an IntWritable for the value 1, and a Text object used to store each word as it is parsed from the input string.
+La clase MiMap (que es una extensión de `Mapper`) transforma la entrada `<clave,valor>` en pares `<clave,valor>` intermedios que serán enviados al **reducer**. La clase define varias variables globales, empezando con un `IntWritable` con valor 1 y un objeto de texto `Text` utilizado para almacenar cada palabra tal y como se procesa a partir de la cadena de entrada:
+```java
+  public static class MiMap extends Mapper<LongWritable, Text, Text, IntWritable> {
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+```
 
-public static class Map extends Mapper<LongWritable ,  Text ,  Text ,  IntWritable > {
-    private final static IntWritable one  = new IntWritable( 1);
-    private Text word  = new Text();
-Create a regular expression pattern you can use to parse each line of input text on word boundaries ("\b"). Word boundaries include spaces, tabs, and punctuation.
+Creamos un patrón de expresión regular que utilizaremos para transformar cada línea de entrada. El patrón es `\b`, que significa *boundary* de palabra, es decir, espacios, tabuladores y signos de puntuación:
+```java
+    private static final Pattern WORD_BOUNDARY = Pattern.compile("\\s*\\b\\s*");
+```
 
-private static final Pattern WORD_BOUNDARY = Pattern .compile(" \\ s* \\ b \\ s* ");
-Hadoop invokes the map method once for every key/value pair from your input source. This does not necessarily correspond to the intermediate key/value pairs output to the reducer. In this case, the map method receives the offset of the first character in the current line of input as the key, and a Text object representing an entire line of text from the input file as the value. It further parses the words on the line to create the intermediate output.
-
-public void map( LongWritable offset,  Text lineText,  Context context)
-        throws  IOException,  InterruptedException {
-Convert the Text object to a string. Create the currentWord variable, which you use to capture individual words from each input string.
-
-String line  = lineText.toString();
-       Text currentWord  = new Text();
-Use the regular expression pattern to split the line into individual words based on word boundaries. If the word object is empty (for example, consists of white space), go to the next parsed object. Otherwise, write a key/value pair to the context object for the job.
-
-for ( String word  : WORD_BOUNDARY .split(line)) {
-    if (word.isEmpty()) {
-        continue;
-   }
-       currentWord  = new Text(word);
-       context.write(currentWord,one);
-   }
-}
-The mapper creates a key/value pair for each word, composed of the word and the IntWritable value 1. The reducer processes each pair, adding one to the count for the current word in the key/value pair to the overall count of that word from all mappers. It then writes the result for that word to the reducer context object, and moves on to the next. When all of the intermediate key/value pairs are processed, the map/reduce task is complete. The application saves the results to the output location in HDFS.
-
-public static class Reduce extends Reducer<Text ,  IntWritable ,  Text ,  IntWritable > {
-     @Override public void reduce( Text word,  Iterable<IntWritable > counts,  Context context)
-         throws IOException,  InterruptedException {
-       int sum  = 0;
-       for ( IntWritable count  : counts) {
-        sum  += count.get();
+Hadoop invoca al método **map** una vez por cada par `<clave,valor>` de tu entrada de datos. Esto no tiene porque corresponderse necesariamente con los pares `<clave,valor>` intermedios que se pasan al **reducer** (lo normal es que haya muchos más pares intermedios). En el caso que nos ocupa, el método **map** recibe el *offset* del primer carácter de la línea actual como clave, y el objeto `Text` representando a la línea completa como valor. Divide la línea en palabras para crear los pares intermedios, usando para ello el patrón de expresión regular:
+```java
+    public void map(LongWritable offset, Text lineText, Context context)
+        throws IOException, InterruptedException {
+```
+Después, convierte el objeto `Text` a un `String`. Crea la variable `currentWord`, que utilizará para capturar las palabras individuales de cada línea de entrada:
+```java
+      String line = lineText.toString();
+      Text currentWord = new Text();
+```
+Utiliza el patrón de expresión regular para dividir la línea actual en palabras individuales, basándose en los delimitadores de palabra. Si la palabra es la cadena vacía, pasamos a la siguiente. En caso contrario, escribimos un par `<clave,valor>` al objeto que actúa como contexto para el trabajo:
+```java
+      for (String word : WORD_BOUNDARY.split(line)) {
+        if (word.isEmpty()) {
+            continue;
+        }
+            currentWord = new Text(word);
+            context.write(currentWord,one);
+        }
       }
-      context.write(word,  new IntWritable(sum));
+```
+
+El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la palabra y el valor `IntWritable` 1. El *reducer* procesa cada par, añadiendo una unidad al contador de la palabra actual correspondiente a todos los *mappers*. Después, escribe el resultado de esa palabra el objeto de contexto del *reducer* y pasa a la siguiente. Cuanto todos los pares `<clave,valor>` intermedios se han procesado, el trabajo MapReduce ha terminado. La aplicación salva entonces los resultados a la ruta de salida correspondiente en el HDFS.
+```java
+  public static class MiReduce extends Reducer<Text, IntWritable, Text, IntWritable> {
+    @Override
+    public void reduce(Text word, Iterable<IntWritable> counts, Context context)
+        throws IOException, InterruptedException {
+      int sum = 0;
+      for (IntWritable count : counts) {
+        sum += count.get();
+      }
+      context.write(word, new IntWritable(sum));
     }
   }
-}
-    
+```
+
+Para probar el programa, vamos a utilizar vamos a bajarnos [todas las obras](http://www.gutenberg.org/cache/epub/100/pg100.txt) de Shakespeare del proyecto Gutenberg. Podemos hacer esto mediante cURL o wget, pero hay que tener cuidado de eliminar el carácter de marca de orden de *bytes* ([BOM](http://es.wikipedia.org/wiki/Marca_de_orden_de_bytes_%28BOM%29)). Utilizaremos el siguiente comando:
+```bash
+curl http://www.gutenberg.org/cache/epub/100/pg100.txt | sed -e 's/^\xEF\xBB\xBF//' > pg100.txt
+```
+
+Como podrás observar, el fichero pesa unos 5MB. Ahora, borramos los ficheros de entrada anteriores y copiamos el fichero descargado con `curl` a nuestra carpeta de entrada en el HDFS:
+```bash
+[cloudera@quickstart ejemplo3]$ hadoop fs -rm input/f*.txt
+15/06/05 07:54:34 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted input/f1.txt
+15/06/05 07:54:35 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted input/f2.txt
+[cloudera@quickstart ejemplo3]$ hadoop fs -put pg100.txt input
+```
+
+Compilamos los ficheros y creamos el `jar`:
+```bash
+[cloudera@quickstart ejemplo3]$ javac  -cp `hadoop classpath` master/sd/*.java
+[cloudera@quickstart ejemplo3]$ jar cvf wordcount.jar master/sd/*.class
+added manifest
+adding: master/sd/WordCount.class(in = 1995) (out= 997)(deflated 50%)
+adding: master/sd/WordCount$MiMap.class(in = 2213) (out= 990)(deflated 55%)
+adding: master/sd/WordCount$MiReduce.class(in = 1651) (out= 694)(deflated 57%)
+```
+
+Ejecutamos el ejemplo:
+```bash
+[cloudera@quickstart ejemplo3]$ hadoop jar wordcount.jar master.sd.WordCount input output
+15/06/05 07:59:41 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+15/06/05 07:59:41 WARN security.UserGroupInformation: PriviledgedActionException as:cloudera (auth:SIMPLE) cause:org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/cloudera/output already exists
+Exception in thread "main" org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/cloudera/output already exists
+	at org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.checkOutputSpecs(FileOutputFormat.java:146)
+	at org.apache.hadoop.mapreduce.JobSubmitter.checkSpecs(JobSubmitter.java:562)
+	at org.apache.hadoop.mapreduce.JobSubmitter.submitJobInternal(JobSubmitter.java:432)
+	at org.apache.hadoop.mapreduce.Job$10.run(Job.java:1306)
+	at org.apache.hadoop.mapreduce.Job$10.run(Job.java:1303)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:415)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1671)
+	at org.apache.hadoop.mapreduce.Job.submit(Job.java:1303)
+	at org.apache.hadoop.mapreduce.Job.waitForCompletion(Job.java:1324)
+	at master.sd.WordCount.run(WordCount.java:39)
+	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:70)
+	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:84)
+	at master.sd.WordCount.main(WordCount.java:25)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.hadoop.util.RunJar.run(RunJar.java:221)
+	at org.apache.hadoop.util.RunJar.main(RunJar.java:136)
+```
+
+El error viene provocado por que el directorio de salida ya existía. Es necesario eliminarlo, para que se nos permita lanzar el trabajo:
+```bash
+[cloudera@quickstart ejemplo3]$ hadoop fs -rm -r output
+15/06/05 08:00:40 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted output
+```
+Ahora ya podemos lanzar el trabajo. Este paso puede tardar bastante dependiendo de la cantidad de memoria RAM de la que disponga tu ordenador. Se nos suministra un resumen de las operaciones realizadas:
+```bash
+[cloudera@quickstart ejemplo3]$ hadoop jar wordcount.jar master.sd.WordCount input output
+15/06/05 08:01:25 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+15/06/05 08:01:26 INFO input.FileInputFormat: Total input paths to process : 1
+15/06/05 08:01:26 INFO mapreduce.JobSubmitter: number of splits:1
+15/06/05 08:01:26 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1433500865548_0004
+15/06/05 08:01:26 INFO impl.YarnClientImpl: Submitted application application_1433500865548_0004
+15/06/05 08:01:27 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1433500865548_0004/
+15/06/05 08:01:27 INFO mapreduce.Job: Running job: job_1433500865548_0004
+15/06/05 08:01:35 INFO mapreduce.Job: Job job_1433500865548_0004 running in uber mode : false
+15/06/05 08:01:35 INFO mapreduce.Job:  map 0% reduce 0%
+15/06/05 08:01:44 INFO mapreduce.Job:  map 100% reduce 0%
+15/06/05 08:01:52 INFO mapreduce.Job:  map 100% reduce 100%
+15/06/05 08:01:53 INFO mapreduce.Job: Job job_1433500865548_0004 completed successfully
+15/06/05 08:01:53 INFO mapreduce.Job: Counters: 49
+	File System Counters
+		FILE: Number of bytes read=12291899
+		FILE: Number of bytes written=24804425
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=5590012
+		HDFS: Number of bytes written=311091
+		HDFS: Number of read operations=6
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters 
+		Launched map tasks=1
+		Launched reduce tasks=1
+		Data-local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=6382
+		Total time spent by all reduces in occupied slots (ms)=5858
+		Total time spent by all map tasks (ms)=6382
+		Total time spent by all reduce tasks (ms)=5858
+		Total vcore-seconds taken by all map tasks=6382
+		Total vcore-seconds taken by all reduce tasks=5858
+		Total megabyte-seconds taken by all map tasks=6535168
+		Total megabyte-seconds taken by all reduce tasks=5998592
+	Map-Reduce Framework
+		Map input records=124787
+		Map output records=1172174
+		Map output bytes=9947545
+		Map output materialized bytes=12291899
+		Input split bytes=126
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=30254
+		Reduce shuffle bytes=12291899
+		Reduce input records=1172174
+		Reduce output records=30254
+		Spilled Records=2344348
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=101
+		CPU time spent (ms)=7250
+		Physical memory (bytes) snapshot=606945280
+		Virtual memory (bytes) snapshot=3138928640
+		Total committed heap usage (bytes)=522715136
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=5589886
+	File Output Format Counters 
+		Bytes Written=311091
+
+```
+
+Ahora debemos comprobar la salida generada, para ver el resultado de los **reduce**. Como siempre, este lo podremos comprobar mirando el contenido del fichero(s) `part*` en la carpeta de salida:
+```bash
+hadoop fs -cat output/part*
+```
+
+
 ## Referencias
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
 
