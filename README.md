@@ -233,7 +233,7 @@ La clase `Logger` manda mensajes de depuración desde las clases **map** y **red
 import org.apache.log4j.Logger;
 ```
 
-Necesitas las clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación MapReduce. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
+Necesitas la clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación MapReduce. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
 ```java
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -495,6 +495,92 @@ Ahora debemos comprobar la salida generada, para ver el resultado de los **reduc
 hadoop fs -cat output/part*
 ```
 
+Si hubiese habido otros ficheros en la carpeta de entrada, también se hubieran procesado.
+
+Si abrimos la dirección [http://localhost:8088/cluster](http://localhost:8088/cluster) podremos acceder al *manager* de Hadoop. Desde aquí podemos consultar todos los *logs*, lo cuál es especialmente importante cuando nuestros trabajos no se completan con éxito. Puede que algunos enlaces no se abran correctamente (al estar accediendo por `localhost`). Si esto sucede, sustituye `quickstart.cloudera` en la barra de navegación por `192.168.56.101` y no deberías tener problema.
+
+
+## Escribiendo nuestros propios *mappers* y *reducers*
+
+A la hora de escribir nuestras propias aplicaciones MapReduce, tenemos dos opciones:
+
+1. Utilizar el entorno de desarrollo de la máquina virtual. Como ya hemos comentado, contiene Eclipse. Prueba a abrirlo y verás que viene un programa de ejemplo MapReduce, similar al que ya hemos visto, pero donde se han generado cuatros clases: 
+    * el Driver (o programa principal que ejecuta el trabajo),
+    * el Map,
+    * el Reduce,
+    * y un Test para realizar pruebas unitarias utilizando JUnit.
+    
+2. Utilizar el anfitrión como entorno de desarrollo, haciendo uso de la conexión `sftp://` de o las carpetas compartidas de VirtualBox para luego subir el fichero `.jar`. Si así lo hacemos, podemos utilizar cualquier entorno de desarrollo para Java (Eclipse, NetBeans o el que prefieras).
+
+Si utilizamos Eclipse, el fichero `.jar` lo podemos generar pulsando el botón derecho del ratón sobre el nombre del proyecto y luego `Java->JAR file`.
+
+## Ejercicio 1
+
+Ejecuta el ejemplo anterior y guarda el fichero de salida generado.
+
+## Ejercicio 2
+
+* El primer ejercicio que debes realizar es escribir un programa MapReduce para Hadoop que muestre el número de palabras que empiezan por cada letra. Esto significa que, para cada letra, queremos contar el número de palabras que empiezan por esa letra. Para la implementación, ignora la capitalización, es decir, considera todas las letras en minúscula. Ignora todos los caracteres que no sean alfabéticos, pero incluye los dígitos.
+* Ejecuta el programa desarrollado sobre la misma entrada (conjunto de obras de Shakespeare).
+
+Debes entregar el fichero de salida y el código fuente generado (solo los `.java`).
+
+## Algunos aspectos adicionales
+
+Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos MapReduce. Tienes una guía bastante breve en el [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
+
+### WordCount V2: configuraciones específicas
+
+Este primer ejemplo está extraído del [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html), mencionado anteriormente.
+Vamos a utilizar las opciones de configuración de Hadoop para incorporar un parámetro que nos permita elegir si el conteo de palabras va a ser sensible (o no) a mayúsculas. Además, haremos uso de un **combiner** que va a combinar los pares `<clave,valor>` que sean locales al **map** utilizado (incremento de prestaciones).
+
+Consulta el fichero [WordCount.java](code/ejemplo4/WordCount.java). Se han realizado los siguientes cambios:
+
+* Importamos la clase `Configuration`. Se puede utilizar esta clase para acceder a argumentos de la línea de comandos en tiempo de ejecución:
+```java
+import org.apache.hadoop.conf.Configuration;
+```
+* Creamos una variable para establecer (o no) si el *map* va a ser sensible a mayúsculas:
+```java
+private boolean sensibleMayusculas = false;
+```
+* Añadimos un método `setup`. Hadoop llama a este método automáticamente al mandar un trabajo. Este código instancia un objeto de tipo `Configuration`, y después establece el valor de la variable `sensibleMayusculas` al valor de la variable de sistema  `wordcount.case.sensitive` que se supone que ha sido especificada por línea de comandos (valor por defecto `false`).
+```java
+    protected void setup(Mapper.Context context)
+      throws IOException,
+        InterruptedException {
+      Configuration config = context.getConfiguration();
+      this.sensibleMayusculas = config.getBoolean("wordcount.mayusculas.sensible", false);
+    }
+```
+* Desactivamos la sensibilidad a mayúsculas aquí. Si `sensibleMayusculas` es `false`, la línea completa se convierte a minúsculas antes de que sea procesado por el `StringTokenizer`:
+```java
+      if (!sensibleMayusculas) {
+        line = line.toLowerCase();
+      }
+```
+* Además, puedes observar como, en este caso, se ha utilizado el mismo *reducer* para servir de combinador de pares locales:
+```java
+    job.setReducerClass(MiReduce.class);
+```
+Compila el ejemplo como hiciste anteriormente. Ahora podrás ejecutar el ejemplo de dos formas. Por defecto, el programa no será sensible a mayúsculas:
+```bash
+hadoop jar wordcount.jar master.sd.WordCount input output
+```
+
+Si queremos que sea sensible a mayúsculas podemos utilizar:
+```bash
+hadoop jar wordcount.jar master.sd.WordCount -Dwordcount.mayusculas.sensible=true input output
+```
+
+### WordCount V3
+
+## Ejercicio 2
+
+* El primer ejercicio que debes realizar es escribir un programa MapReduce para Hadoop que muestre el número de palabras que empiezan por cada letra. Esto significa que, para cada letra, queremos contar el número de palabras que empiezan por esa letra. Para la implementación, ignora la capitalización, es decir, considera todas las letras en minúscula. Ignora todos los caracteres que no sean alfabéticos, pero incluye los dígitos.
+* Ejecuta el programa desarrollado sobre la misma entrada (conjunto de obras de Shakespeare).
+
+Debes entregar el fichero de salida y el código fuente generado (solo los `.java`).
 
 ## Referencias
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
