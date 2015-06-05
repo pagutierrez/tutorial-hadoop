@@ -92,24 +92,24 @@ public class Null {
 ```
 
 Lo primero que debes de hacer es crear un directorio, utilizando el CLI de HDFS. Abre una terminal en la máquina virtual (o conéctate por SSH) y escribe:
-
+```bash
     hadoop fs -mkdir input
-
+```
 El directorio de trabajo por defecto para este usuario es `\users\cloudera`. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros en local (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
-
+```bash
     hadoop fs -put f*.txt input/
-
+```
 Comprueba como ha quedado el sistema de ficheros a través de [http://localhost:50070/](http://localhost:50070/).
 
 Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, donde quedará la salida del trabajo:
-
-    javac  -cp `hadoop classpath` *.java  # compilar
-    jar cvf Null.jar *.class # crear el JAR
-    hadoop jar Null.jar Null input output # nombre del JAR, de la clase principal y args del programa
-
+```bash
+javac  -cp `hadoop classpath` *.java  # compilar
+jar cvf Null.jar *.class # crear el JAR
+hadoop jar Null.jar Null input output # nombre del JAR, de la clase principal y args del programa
+```
 Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. 
 ```bash
-[cloudera@quickstart ejemplo1]$ hadoop fs -ls output for
+[cloudera@quickstart ejemplo1]$ hadoop fs -ls output
 Found 2 items
 -rw-r--r--   1 cloudera cloudera          0 2015-06-05 04:15 output/_SUCCESS
 -rw-r--r--   1 cloudera cloudera         77 2015-06-05 04:15 output/part-r-00000
