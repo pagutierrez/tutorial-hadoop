@@ -214,39 +214,47 @@ El WordCount (contador de palabras) es el "¡Hola Mundo!" de Hadoop. Por su senc
 
 En primer lugar, descarga el código de [WordCount.java](code/ejemplo3/WordCount.java). Cópialo en una carpeta `ejemplo3` del `$HOME` de tu usuario `cloudera`.    
 
-Utiliza un paquete apropiado (y genera la carpeta correspondiente) o mantén el genérico (elimina la línea `package`). Las únicas clases estándar de Java que vamos a utilizar son `IOException` y `regex.Pattern`, que las emplearemos para extraer las palabras de los ficheros.
+Utiliza un paquete apropiado (y genera la carpeta correspondiente) o mantén el genérico (elimina la línea `package`). Las únicas clases estándar de Java que vamos a utilizar son `IOException` y `regex.Pattern`, que las emplearemos para extraer las palabras de los ficheros:
 ```java
 package master.sd;
 import java.io.IOException;
 import java.util.regex.Pattern;
 ```
 
-Esta clase extenderá a la clase `Configured` e implementa la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación MapReduce.
-
+Esta clase extenderá a la clase `Configured` e implementa la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación MapReduce:
+```java
     import org.apache.hadoop.conf.Configured;
     import org.apache.hadoop.util.Tool;
     import org.apache.hadoop.util.ToolRunner;
-
+```
 
 La clase `Logger` manda mensajes de depuración desde las clases **map** y **reduce**. Cuando ejecutas la aplicación, uno de los mensajes estándar de información proporciona la URL que permite rastrear la ejecución del trabajo. Cualquier mensaje pasado al `Logger` se muestra los logs del map o del reduce de tu servidor Hadoop.
-
+```java
     import org.apache.log4j.Logger;
-You need the Job class to create, configure, and run an instance of your MapReduce application. You extend the Mapper class with your own Mapclass and add your own processing instructions. The same is true for theReducer: you extend it to create and customize your own Reduce class.
+```
 
+Necesitas las clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación MapReduce. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
+```java
 import org.apache.hadoop.mapreduce.Job;
- import org.apache.hadoop.mapreduce.Mapper;
- import org.apache.hadoop.mapreduce.Reducer;
-Use the Path class to access files in HDFS. In your job configuration instructions, you pass required paths using the FileInputFormat and FileOutputFormat classes.
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+```
 
+Utiliza la clase `Path` para acceder a tus archivos en el HDFS. En las instrucciones de configuración de tu `Job`, puedes especificar las rutas requeridas utilizando las clases `FileInputFormat` y `FileOutputFormat`:
+```java
 import org.apache.hadoop.fs.Path;
- import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
- import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-Writable objects have convenience methods for writing, reading, and comparing values during map and reduce processing. You can think of the Text class asStringWritable, because it performs essentially the same functions as those for integer (IntWritable) and long integer (LongWritable) objects.
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+```
 
+Como ya se comentó, los objetos `Writable` tienen métodos para escribir, leer y comparar valores durante el procesamiento de **map** y **reduce**. La clase `Text` es como un `StringWritable`, porque realiza esencialmente las mismas funciones que hacen las clases `IntWritable` para enteros y `LongWritable` para `long`:
+```java
 import org.apache.hadoop.io.IntWritable;
- import org.apache.hadoop.io.LongWritable;
- import org.apache.hadoop.io.Text;
-WordCount includes main and run methods, and the inner classes Map andReduce.
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+```
+
+[WordCount.java](code/ejemplo3/WordCount.java) incluye los métodos `main` y `run` y las clases internas `MiMap` y `MiReduce`.
 
 public class WordCount extends Configured implements Tool {
 
