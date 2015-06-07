@@ -24,7 +24,6 @@ public class MostFrequentNextWord extends Configured implements Tool {
 	}
 
 	public int run(String[] args) throws Exception {
-		
 		Job job = Job.getInstance(getConf(), "mostFrequentNextWord-MR1");
 		job.setJarByClass(this.getClass());
 		FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -45,8 +44,6 @@ public class MostFrequentNextWord extends Configured implements Tool {
 		job2.setOutputKeyClass(Text.class);
 		job2.setOutputValueClass(Text.class);
 		return job2.waitForCompletion(true) ? 0 : 1;
-
-
 	}
 
 	public static class MiMap extends Mapper<LongWritable, Text, Text, IntWritable> {
