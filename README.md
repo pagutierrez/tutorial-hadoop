@@ -1,6 +1,6 @@
-# Tutorial de introducción a la programación MapReduce en Hadoop
+# Tutorial de introducción a la programación *MapReduce* en Hadoop
 ## Introducción
-Este tutorial pretende presentar varios ejemplos sencillos que permitan familiarizarse con los conceptos fundamentales del desarrollo de programas en el entorno *MapReduce* de Java, concretamente, en la implementación de Hadoop. Se asume que ya se conocen los aspectos básicos del modelo *MapReduce*. En caso contrario, se recomienda consultar los apuntes de clase y el artículo original que propone este modelo de programación paralela ([MapReduce: Simplified Data Processing on Large Clusters](http://static.googleusercontent.com/media/research.google.com/es//archive/mapreduce-osdi04.pdf) de *Jeffrey Dean* y *Sanjay Ghemawat*), en cuyas ideas se basa la implementación de *MapReduce* de libre distribución incluida en Hadoop.
+Este tutorial pretende presentar varios ejemplos sencillos que permitan familiarizarse con los conceptos fundamentales del desarrollo de programas en el entorno *MapReduce* de Java, concretamente, en la implementación proporcionada por Hadoop. Se asume que ya se conocen los aspectos básicos del modelo *MapReduce*. En caso contrario, se recomienda consultar los apuntes de clase y el artículo original que propone este modelo de programación paralela ([MapReduce: Simplified Data Processing on Large Clusters](http://static.googleusercontent.com/media/research.google.com/es//archive/mapreduce-osdi04.pdf) de *Jeffrey Dean* y *Sanjay Ghemawat*), en cuyas ideas se basa la implementación de *MapReduce* de libre distribución incluida en Hadoop.
 
 Este tutorial supone una pequeña introducción al mundo de Hadoop, pero deberías consultar en Internet si deseas disponer de más información.
 
@@ -8,11 +8,11 @@ El tutorial describe como instalar Hadoop, como escribir una primera aplicación
 
 ## Instalación de Hadoop
 
-La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtuales que proporciona Cloudera en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para VMWare, KVM y VirtualBox.
+La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtuales que proporciona Cloudera en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para `VMWare`, `KVM` y `VirtualBox`.
 
-El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de 4GB dedicados al *guest* según Cloudera). Funcionan con menos memoria, pero el desempeño se reduce (más esperas).
+El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest* ** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
 
-La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil.
+La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas).
 
 ### Instalación utilizando VirtualBox
 
@@ -20,7 +20,7 @@ La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros 
 2. [Descarga](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html) la última versión de la máquina virtual de Cloudera.
 3. Descomprime la máquina virtual. Está comprimida con *7zip* (puede que necesites [instalarlo](http://www.7-zip.org/)).
 4. Arranca *VirtualBox* y selecciona "Importar servicio virtualizado". Selecciona el archivo OVF ya descomprimido.
-5. Una vez terminada la importación (que tardará un rato), debería aparecer la máquina virtual. Vamos a configurar *VirtualBox* para que se cree una red de "solo-anfitrión". `Archivo->Preferencias->Red->Redes solo-anfitrión`. Añádela con los parámetros por defecto. Después, configuramos la máquina virtual para que la use `Botón derecho->Configuración->Red->Adaptador2->Habilitar->Conectado a -> Adaptador solo anfitrión`. De esta forma, podremos acceder por `ssh` a nuestro máquina virtual (utilizando `ssh` o `putty`) a través de la dirección `192.168.56.101`. 
+5. Una vez terminada la importación (que tardará un rato), debería aparecer la máquina virtual. Vamos a configurar *VirtualBox* para que se cree una red de "solo-anfitrión". `Archivo->Preferencias->Red->Redes solo-anfitrión`. Añádela con los parámetros por defecto. Después, configuramos la máquina virtual para que la use `Botón derecho->Configuración->Red->Adaptador2->Habilitar->Conectado a -> Adaptador solo anfitrión`. De esta forma, podremos acceder por `ssh` a nuestro máquina virtual (utilizando `ssh` o `putty`) a través de la dirección `192.168.56.101`.
 6. Finalmente, arranca la máquina virtual (*paciencia*). Una vez arrancada, deberíamos poder acceder desde el anfitrión a la dirección [http://localhost:8088](http://localhost:8088), dónde podremos ver la interfaz del administrador de recursos. Podrás ver varios que éste y varios puertos está redirigidos por NAT en el Adaptador 1 de tu máquina virtual.
 7. El usuario y contraseña por defecto para Cloudera es:
     - User: `cloudera`
@@ -39,7 +39,7 @@ La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstar
 El sistema de ficheros de Hadoop (HDFS) se puede manejar a través de tres interfaces:
 
 1. Interfaz de línea de comandos, mediante el comando `hadoop fs [opciones]`.
-2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de [http://localhost:50070/](http://localhost:50070/). Ahí podrás ver los ficheros creados y 
+2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de [http://localhost:50070/](http://localhost:50070/). Ahí podrás ver los ficheros creados y
 3. API de programación.
 
 La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
@@ -59,9 +59,9 @@ La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
 | `hadoop fs -get <src> <local>` | Copia de HDFS a local |
 
 
-## El MapReduce nulo
+## El *MapReduce* nulo
 
-Para entender mejor el modo de operación de MapReduce, comenzamos desarrollando un programa [`Null.java`](code/ejemplo1/Null.java) que, en principio, no hace nada, dejando, por tanto, que se ejecute un trabajo *MapReduce* con todos sus parámetros por defecto:
+Para entender mejor el modo de operación de *MapReduce*, comenzamos desarrollando un programa [`Null.java`](code/ejemplo1/Null.java) que, en principio, no hace nada, dejando, por tanto, que se ejecute un trabajo *MapReduce* con todos sus parámetros por defecto:
 ```java
 import java.io.IOException;
 
@@ -77,7 +77,7 @@ public class Null {
 			System.exit(2);
 		}
 		// Crea un trabajo MapReduce
-		Job job = Job.getInstance(); 
+		Job job = Job.getInstance();
 		// Especifica el JAR del mismo
 		job.setJarByClass(Null.class);
 
@@ -107,7 +107,7 @@ javac  -cp `hadoop classpath` *.java  # compilar
 jar cvf Null.jar *.class # crear el JAR
 hadoop jar Null.jar Null input output # nombre del JAR, de la clase principal y args del programa
 ```
-Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`. 
+Echa un vistazo al contenido del directorio de salida, donde, entre otros, habrá un fichero denominado `part-r-00000`.
 ```bash
 [cloudera@quickstart ejemplo1]$ hadoop fs -ls output
 Found 2 items
@@ -122,8 +122,8 @@ Found 2 items
 9	qwerqwer
 18	qwerwqer
 18	qwer qwer
-27	
-28	
+27
+28
 ```
 
 ¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
@@ -136,7 +136,7 @@ Esto especifica el formato de entrada. En este caso, hemos usado `TextInputForma
 
 > job.setMapperClass(Mapper.class);
 
-Esto especifica cuál es la clase utilizada para el **map**. En este caso, utilizamos el Map identidad, que simplemente copia lo que llega a la salida (sin modificarlo).
+Esto especifica cuál es la clase utilizada para el **map**. En este caso, utilizamos el `Map` identidad, que simplemente copia lo que llega a la salida (sin modificarlo).
 
 > job.setMapOutputKeyClass(LongWritable.class);
 
@@ -144,19 +144,19 @@ Este es el tipo de datos de la clave generada por **map**. Dado que la función 
 
 > job.setMapOutputValueClass(Text.class);
 
-El tipo de datos del valor generado por **map**. Dado que la función map usada copia el valor recibido, es de tipo `Text`.
+El tipo de datos del valor generado por **map**. Dado que la función **map** usada copia el valor recibido, es de tipo `Text`.
 
 > job.setPartitionerClass(HashPartitioner.class);
 
-Esta clase es la que vamos a utilizar para realizar las particiones (decidir que *reduce* se le asigna a cada clave. Por defecto, utilizamos el basado en hash (`hash(key) mod R`).
+Esta clase es la que vamos a utilizar para realizar las particiones (decidir qué **reduce** se le asigna a cada clave. Por defecto, utilizamos el basado en hash (`hash(key) mod R`).
 
 > job.setNumReduceTasks(1);
 
-Sólo vamos a utilizar un reducer, por eso generamos un solo fichero de salida.
+Sólo vamos a utilizar un *reducer*, por eso generamos un solo fichero de salida.
 
 > job.setReducerClass(Reducer.class);
 
-Con esto se especifica la clase del reducer. En este caso, utilizamos el Reducer identidad, que copia los pares `<clave,valor>` que llegan al fichero de salida.
+Con esto se especifica la clase del *reducer*. En este caso, utilizamos el `Reducer` identidad, que copia los pares `<clave,valor>` que llegan al fichero de salida.
 
 > job.setOutputKeyClass(LongWritable.class);
 
@@ -168,7 +168,7 @@ El tipo de datos del valor generado por **reduce** y por **map** excepto si se h
 
 > job.setOutputFormatClass(TextOutputFormat.class);
 
-Este formato de salida es de tipo texto y consiste en la clave y el valor separados, por defecto, por un tabulador (para pasar a texto los valores generados por reduce, el entorno de ejecución invoca el método `toString` de las respectivas clases `Writable`).
+Este formato de salida es de tipo texto y consiste en la clave y el valor separados, por defecto, por un tabulador (para pasar a texto los valores generados por **reduce**, el entorno de ejecución invoca el método `toString` de las respectivas clases `Writable`).
 
 Modifica el código de `Null.java` para especificar dos *reducers* y ejecútalo analizando la salida producida por el programa.
 
@@ -212,7 +212,7 @@ public class Null extends Configured implements Tool {
 
 El WordCount (contador de palabras) es el "¡Hola Mundo!" de Hadoop. Por su sencillez y su idoneidad para ser resuelto con el paradigma *MapReduce*, se utiliza en multitud de tutoriales de iniciación. Ahora vamos a seguir el [tutorial de iniciación a Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial.html) que podemos encontrar en su documentación.
 
-En primer lugar, descarga el código de [WordCount.java](code/ejemplo3/WordCount.java). Cópialo en una carpeta `ejemplo3` del `$HOME` de tu usuario `cloudera`.    
+En primer lugar, descarga el código de [WordCount.java](code/ejemplo3/WordCount.java). Cópialo en una carpeta `ejemplo3` del `$HOME` de tu usuario `cloudera`.
 
 Utiliza un paquete apropiado (y genera la carpeta correspondiente) o mantén el genérico (elimina la línea `package`). Las únicas clases estándar de Java que vamos a utilizar son `IOException` y `regex.Pattern`, que las emplearemos para extraer las palabras de los ficheros:
 ```java
@@ -221,19 +221,19 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 ```
 
-Esta clase extenderá a la clase `Configured` e implementa la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación MapReduce:
+Esta clase extenderá a la clase `Configured` e implementa la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación *MapReduce*:
 ```java
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 ```
 
-La clase `Logger` manda mensajes de depuración desde las clases **map** y **reduce**. Cuando ejecutas la aplicación, uno de los mensajes estándar de información proporciona la URL que permite rastrear la ejecución del trabajo. Cualquier mensaje pasado al `Logger` se muestra los logs del map o del reduce de tu servidor Hadoop.
+La clase `Logger` manda mensajes de depuración desde las clases **map** y **reduce**. Cuando ejecutas la aplicación, uno de los mensajes estándar de información proporciona la URL que permite rastrear la ejecución del trabajo. Cualquier mensaje pasado al `Logger` se muestra los *logs* del **map** o del **reduce** de tu servidor Hadoop.
 ```java
 import org.apache.log4j.Logger;
 ```
 
-Necesitas la clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación MapReduce. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
+Necesitas la clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación *MapReduce*. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
 ```java
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -290,7 +290,7 @@ Establecer las rutas de entrada y salida para la aplicación. Los ficheros de en
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
 ```
 
-Establecer la clase para el **map** y para el **reduce**. En este caso, utilizaremos las clases internas MiMap y MiReduce definidas en la clase:
+Establecer la clase para el **map** y para el **reduce**. En este caso, utilizaremos las clases internas `MiMap` y `MiReduce` definidas en la clase:
 ```java
     job.setMapperClass(MiMap.class);
     job.setReducerClass(MiReduce.class);
@@ -308,7 +308,7 @@ En Unix, 0 indica éxito y cualquier otra cosa un fallo. Cuando el trabajo termi
     return job.waitForCompletion(true) ? 0 : 1;
 ```
 
-La clase MiMap (que es una extensión de `Mapper`) transforma la entrada `<clave,valor>` en pares `<clave,valor>` intermedios que serán enviados al **reducer**. La clase define varias variables globales, empezando con un `IntWritable` con valor 1 y un objeto de texto `Text` utilizado para almacenar cada palabra tal y como se procesa a partir de la cadena de entrada:
+La clase `MiMap` (que es una extensión de `Mapper`) transforma la entrada `<clave,valor>` en pares `<clave,valor>` intermedios que serán enviados al **reducer**. La clase define varias variables globales, empezando con un `IntWritable` con valor 1 y un objeto de texto `Text` utilizado para almacenar cada palabra tal y como se procesa a partir de la cadena de entrada:
 ```java
   public static class MiMap extends Mapper<LongWritable, Text, Text, IntWritable> {
     private final static IntWritable one = new IntWritable(1);
@@ -342,7 +342,7 @@ Utiliza el patrón de expresión regular para dividir la línea actual en palabr
       }
 ```
 
-El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la palabra y el valor `IntWritable` 1. El *reducer* procesa cada par, añadiendo una unidad al contador de la palabra actual correspondiente a todos los *mappers*. Después, escribe el resultado de esa palabra el objeto de contexto del *reducer* y pasa a la siguiente. Cuanto todos los pares `<clave,valor>` intermedios se han procesado, el trabajo MapReduce ha terminado. La aplicación salva entonces los resultados a la ruta de salida correspondiente en el HDFS.
+El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la palabra y el valor `IntWritable` 1. El *reducer* procesa cada par, añadiendo una unidad al contador de la palabra actual correspondiente a todos los *mappers*. Después, escribe el resultado de esa palabra el objeto de contexto del *reducer* y pasa a la siguiente. Cuanto todos los pares `<clave,valor>` intermedios se han procesado, el trabajo *MapReduce* ha terminado. La aplicación salva entonces los resultados a la ruta de salida correspondiente en el HDFS.
 ```java
   public static class MiReduce extends Reducer<Text, IntWritable, Text, IntWritable> {
     @Override
@@ -443,7 +443,7 @@ Ahora ya podemos lanzar el trabajo. Este paso puede tardar bastante dependiendo 
 		HDFS: Number of read operations=6
 		HDFS: Number of large read operations=0
 		HDFS: Number of write operations=2
-	Job Counters 
+	Job Counters
 		Launched map tasks=1
 		Launched reduce tasks=1
 		Data-local map tasks=1
@@ -483,9 +483,9 @@ Ahora ya podemos lanzar el trabajo. Este paso puede tardar bastante dependiendo 
 		WRONG_LENGTH=0
 		WRONG_MAP=0
 		WRONG_REDUCE=0
-	File Input Format Counters 
+	File Input Format Counters
 		Bytes Read=5589886
-	File Output Format Counters 
+	File Output Format Counters
 		Bytes Written=311091
 
 ```
@@ -502,14 +502,14 @@ Si abrimos la dirección [http://localhost:8088/cluster](http://localhost:8088/c
 
 ## Escribiendo nuestros propios *mappers* y *reducers*
 
-A la hora de escribir nuestras propias aplicaciones MapReduce, tenemos dos opciones:
+A la hora de escribir nuestras propias aplicaciones *MapReduce*, tenemos dos opciones:
 
-1. Utilizar el entorno de desarrollo de la máquina virtual. Como ya hemos comentado, contiene Eclipse. Prueba a abrirlo y verás que viene un programa de ejemplo MapReduce, similar al que ya hemos visto, pero donde se han generado cuatros clases: 
-    * el Driver (o programa principal que ejecuta el trabajo),
-    * el Map,
-    * el Reduce,
+1. Utilizar el entorno de desarrollo de la máquina virtual. Como ya hemos comentado, contiene Eclipse. Prueba a abrirlo y verás que viene un programa de ejemplo *MapReduce*, similar al que ya hemos visto, pero donde se han generado cuatros clases:
+    * el *Driver* (o programa principal que ejecuta el trabajo),
+    * el *Map*,
+    * el *Reduce*,
     * y un Test para realizar pruebas unitarias utilizando JUnit.
-    
+
 2. Utilizar el anfitrión como entorno de desarrollo, haciendo uso de la conexión `sftp://` de o las carpetas compartidas de VirtualBox para luego subir el fichero `.jar`. Si así lo hacemos, podemos utilizar cualquier entorno de desarrollo para Java (Eclipse, NetBeans o el que prefieras).
 
 Si utilizamos Eclipse, el fichero `.jar` lo podemos generar pulsando el botón derecho del ratón sobre el nombre del proyecto y luego `Java->JAR file`.
@@ -520,14 +520,14 @@ Ejecuta el ejemplo anterior y guarda el fichero de salida generado.
 
 ## Ejercicio 2
 
-* El primer ejercicio que debes realizar es escribir un programa MapReduce para Hadoop que muestre el número de palabras que empiezan por cada letra. Esto significa que, para cada letra, queremos contar el número de palabras que empiezan por esa letra. Para la implementación, ignora la capitalización, es decir, considera todas las letras en minúscula. Ignora todos los caracteres que no sean alfabéticos, pero incluye los dígitos.
+* El primer ejercicio que debes realizar es escribir un programa *MapReduce* para Hadoop que muestre el número de palabras que empiezan por cada letra. Esto significa que, para cada letra, queremos contar el número de palabras que empiezan por esa letra. Para la implementación, ignora la capitalización, es decir, considera todas las letras en minúscula. Ignora todos los caracteres que no sean alfabéticos, pero incluye los dígitos.
 * Ejecuta el programa desarrollado sobre la misma entrada (conjunto de obras de Shakespeare).
 
 Debes entregar el fichero de salida y el código fuente generado (solo los `.java`).
 
 ## Algunos aspectos adicionales
 
-Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos MapReduce. Tienes una guía bastante breve en el [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
+Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos *MapReduce*. Tienes una guía bastante breve en el [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
 
 ### WordCount V2: configuraciones específicas
 
@@ -540,7 +540,7 @@ Consulta el fichero [WordCount.java](code/ejemplo4/WordCount.java). Se han reali
 ```java
 import org.apache.hadoop.conf.Configuration;
 ```
-* Creamos una variable para establecer (o no) si el *map* va a ser sensible a mayúsculas:
+* Creamos una variable para establecer (o no) si el **map** va a ser sensible a mayúsculas:
 ```java
 private boolean sensibleMayusculas = false;
 ```
@@ -575,7 +575,7 @@ hadoop jar wordcount.jar master.sd.WordCount -Dwordcount.mayusculas.sensible=tru
 
 ### MostFrequentNextWord
 
-El fichero [MostFrequentNextWord.java](code/ejemplo5/MostFrequentNextWord.java) muestra una versión del contador de palabras, en la que intentamos contar cuál es la palabra que aparece con más frecuencia detrás de cada palabra. Para ello hacemos un encadenamiento (*chaining*) de dos procesos MapReduce, de forma que el primer proceso obtiene el conteo de todas las parejas de palabras que aparecen seguidas y, utilizando el resultado de este conteo, el segundo analiza, para cada palabra, cuál es la palabra que más frecuentemente aparece después.
+El fichero [MostFrequentNextWord.java](code/ejemplo5/MostFrequentNextWord.java) muestra una versión del contador de palabras, en la que intentamos contar cuál es la palabra que aparece con más frecuencia detrás de cada palabra. Para ello hacemos un encadenamiento (*chaining*) de dos procesos *MapReduce*, de forma que el primer proceso obtiene el conteo de todas las parejas de palabras que aparecen seguidas y, utilizando el resultado de este conteo, el segundo analiza, para cada palabra, cuál es la palabra que más frecuentemente aparece después.
 
 La forma en que se ejecutan dos procesos encadenados de *MapReduce* es utilizar el directorio de salida del primero como directorio de entrada del primero. Lo único que tenemos que hacer es configurar el método `run` para que haya dos trabajos (objetos de la clase `Job`) y especificar un par de clases *MapReduce* para cada trabajo (en nuestro caso, `MiMap`, `MiReduce`, `MiMap2` y `MiReduce2`):
 ```java
@@ -590,7 +590,7 @@ La forma en que se ejecutan dos procesos encadenados de *MapReduce* es utilizar 
 		job.setOutputValueClass(IntWritable.class);
 		if (! job.waitForCompletion(true))
 			return 1;
-		
+
 		Job job2 = Job.getInstance(getConf(), "mostFrequentNextWord-MR2");
 		job2.setJarByClass(this.getClass());
 		FileInputFormat.addInputPath(job2, new Path(args[1]));
@@ -602,7 +602,7 @@ La forma en que se ejecutan dos procesos encadenados de *MapReduce* es utilizar 
 		return job2.waitForCompletion(true) ? 0 : 1;
 	}
 ```
-Observemos ahora cada uno de los procesos *MapReduce*. El primer **Map** realiza lo siguiente:
+Observemos ahora cada uno de los procesos *MapReduce*. El primer **map** realiza lo siguiente:
 ```java
 	public static class MiMap extends Mapper<LongWritable, Text, Text, IntWritable> {
 		private final static IntWritable one = new IntWritable(1);
@@ -619,7 +619,7 @@ Observemos ahora cada uno de los procesos *MapReduce*. El primer **Map** realiza
 					if (!NON_ALPHA.matcher(words[i]).matches() && !NON_ALPHA.matcher(words[i+1]).matches()) {
 						this.word.set(words[i] + "-" + words[i+1]);
 						context.write(this.word,one);
-					}					
+					}
 				}
 			}
 		}
@@ -627,7 +627,7 @@ Observemos ahora cada uno de los procesos *MapReduce*. El primer **Map** realiza
 ```
 Como puedes observar, hemos vuelto a dividir la línea en palabras. Luego recorremos una a una las palabras de la línea y observamos si la palabra actual y la siguiente contienen únicamente caracteres alfabéticos. Para esta tarea, nos valemos de la expresión regular `"^.*[^a-zA-Z0-9].*$"` que buscaría cualquier carácter no alfabético. Finalmente, escribimos en el objeto `Context` la pareja de palabras separadas por `-` como la clave y un uno para indicar que aparecen una vez.
 
-Por su parte, el primer **Reduce** simplemente va a combinar los pares `<clave,valor>` generados por el primer **Map**, acumulando el número de ocurrencias de esa pareja de palabras:
+Por su parte, el primer **reduce** simplemente va a combinar los pares `<clave,valor>` generados por el primer **map**, acumulando el número de ocurrencias de esa pareja de palabras:
 ```java
 	public static class MiReduce extends Reducer<Text, IntWritable, Text, IntWritable> {
 		@Override
@@ -642,7 +642,7 @@ Por su parte, el primer **Reduce** simplemente va a combinar los pares `<clave,v
 	}
 ```
 
-La salida del primer proceso **Reduce** se va a generar en el directorio `new Path(args[1])`. Recuerda que la salida generada siempre incluye la clave (en este caso la pareja de palabras separadas por un `-`, un carácter tabulador y el valor (en este caso, el número de veces que aparece la pareja en el texto). Ahora, el segundo proceso **Map** va a crear un conjunto de pares `<clave,valor>` dónde, como clave, tendremos cada una de las palabras y, como valor, tendremos la palabra que aparece después un guión `-` y el número de ocurrencias:
+La salida del primer proceso **Reduce** se va a generar en el directorio `new Path(args[1])`. Recuerda que la salida generada siempre incluye la clave (en este caso la pareja de palabras separadas por un `-`, un carácter tabulador y el valor (en este caso, el número de veces que aparece la pareja en el texto). Ahora, el segundo proceso **map** va a crear un conjunto de pares `<clave,valor>` dónde, como clave, tendremos cada una de las palabras y, como valor, tendremos la palabra que aparece después un guión `-` y el número de ocurrencias:
 ```java
 	public static class MiMap2 extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -651,7 +651,7 @@ La salida del primer proceso **Reduce** se va a generar en el directorio `new Pa
 			String line = lineText.toString();
 
 			int index, index2;
-			if((index = line.indexOf('-')) == -1) 
+			if((index = line.indexOf('-')) == -1)
 				return;
 			if((index2 = line.indexOf('\t')) == -1)
 				return;
@@ -664,7 +664,7 @@ La salida del primer proceso **Reduce** se va a generar en el directorio `new Pa
 	}
 ```
 
-Todos estos pares `<clave,valor>` se combinarán y mandarán al segundo **Reducer**, que va a buscar cuál es la palabra más frecuente (mayor número de ocurrencias) iterando sobre la lista correspondiente al conjunto de valores de cada clave:
+Todos estos pares `<clave,valor>` se combinarán y mandarán al segundo **reducer**, que va a buscar cuál es la palabra más frecuente (mayor número de ocurrencias) iterando sobre la lista correspondiente al conjunto de valores de cada clave:
 ```java
 	public static class MiReduce2 extends Reducer<Text, Text, Text, Text> {
 
@@ -723,7 +723,7 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		HDFS: Number of read operations=6
 		HDFS: Number of large read operations=0
 		HDFS: Number of write operations=2
-	Job Counters 
+	Job Counters
 		Launched map tasks=1
 		Launched reduce tasks=1
 		Data-local map tasks=1
@@ -763,9 +763,9 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		WRONG_LENGTH=0
 		WRONG_MAP=0
 		WRONG_REDUCE=0
-	File Input Format Counters 
+	File Input Format Counters
 		Bytes Read=5589886
-	File Output Format Counters 
+	File Output Format Counters
 		Bytes Written=2317892
 15/06/07 10:28:56 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
 15/06/07 10:28:56 INFO input.FileInputFormat: Total input paths to process : 1
@@ -791,7 +791,7 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		HDFS: Number of read operations=6
 		HDFS: Number of large read operations=0
 		HDFS: Number of write operations=2
-	Job Counters 
+	Job Counters
 		Launched map tasks=1
 		Launched reduce tasks=1
 		Data-local map tasks=1
@@ -831,9 +831,9 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		WRONG_LENGTH=0
 		WRONG_MAP=0
 		WRONG_REDUCE=0
-	File Input Format Counters 
+	File Input Format Counters
 		Bytes Read=2317892
-	File Output Format Counters 
+	File Output Format Counters
 		Bytes Written=237140
 ```
 Finalmente, podemos comprobar la salida generada con el comando:
@@ -842,7 +842,7 @@ Finalmente, podemos comprobar la salida generada con el comando:
 ```
 ## Ejercicio 3
 
-* Escribe un programa MapReduce para Hadoop que implemente un algoritmo de recomendación simple para una red social del tipo "Personas que podrías conocer". La idea fundamental es que si dos personas tienen muchos amigos en común, entonces el sistema debería recomendarles ser amigos.
+* Escribe un programa *MapReduce* para Hadoop que implemente un algoritmo de recomendación simple para una red social del tipo "Personas que podrías conocer". La idea fundamental es que si dos personas tienen muchos amigos en común, entonces el sistema debería recomendarles ser amigos.
 * Fichero de entrada: Descarga el fichero de [entrada](code/ejercicio3/ejercicio3Datos.zip). El fichero contiene la lista de adyacencia en el siguiente formato:
 
     ```
@@ -850,14 +850,14 @@ Finalmente, podemos comprobar la salida generada con el comando:
     ```
 
     dónde `<IDUsuario>` es un entero correspondiente a un único usuario, `<\t>` es un carácter tabulador  y `<ListaAmigos>` es una lista separada por comas de los IDs de los amigos de `<IDUsuario>`. Hágase notar que los amigos son mutuos (es decir, las aristas son no dirigidas): si A es amigo de B, entonces B es amigo de A. Los datos proporcionados son consistentes con esta regla, habiendo un entrada por cada dirección de la arista.
-    
+
 * **Algoritmo**: Vamos a utilizar un algoritmo simple que, por cada usuario U, recomiende `N=10` usuarios que no sean amigos de U pero que tengan el número mayor de amigos en común con U.
 * **Salida**: la salida generada por el programa debería contener una línea por usuario con el siguiente formato:
 
     ```
     <IDUsuario><\t><Recomendaciones>
     ```
-    
+
     dónde `<IDUsuario>` es el identificador del usuario al que se le hacen las recomendaciones y `<Recomendaciones>` es una lista separada por comas de los 10 amigos recomendados por el algoritmo, ordenada en orden decreciente de número de amigos en común. Si un usuario no tiene recomendaciones, no introduzcas nada en la lista. Si hay usuario recomendados con el mismo número de amigos en común, resuelve el empate utilizando orden creciente de sus identificadores.
 
 
@@ -868,4 +868,3 @@ Este tutorial se ha realizado basándonos en gran medida en los siguientes tutor
 1. [Introducción a la programación MapReduce en Hadoop](http://laurel.datsi.fi.upm.es/docencia/asignaturas/ppd). Universidad Politécnica de Madrid (UPM).
 
 2. [Hadoop Tutorial](http://web.stanford.edu/class/cs246/homeworks/tutorial.pdf) Stanford University.
-
