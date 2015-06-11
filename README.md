@@ -325,24 +325,24 @@ Hadoop invoca al método **map** una vez por cada par `<clave,valor>` de tu entr
     public void map(LongWritable offset, Text lineText, Context context)
         throws IOException, InterruptedException {
 ```
-Después, convierte el objeto `Text` a un `String`. Crea la variable `currentWord`, que utilizará para capturar las palabras individuales de cada línea de entrada:
+En primer lugar, convierte el objeto `Text` a un `String`. Crea la variable `currentWord`, que utilizará para capturar las palabras individuales de cada línea de entrada:
 ```java
       String line = lineText.toString();
       Text currentWord = new Text();
 ```
-Utiliza el patrón de expresión regular para dividir la línea actual en palabras individuales, basándose en los delimitadores de palabra. Si la palabra es la cadena vacía, pasamos a la siguiente. En caso contrario, escribimos un par `<clave,valor>` al objeto que actúa como contexto para el trabajo:
+Utiliza el patrón de expresión regular para dividir la línea actual en palabras individuales, basándose en los delimitadores de palabra. Si la palabra es la cadena vacía, pasamos a la siguiente. En caso contrario, escribimos un par `<clave,valor>` en el objeto que actúa como contexto para el trabajo (recuerda que esto se escribirá en ficheros locales intermedios del **map** cuyo contenido será luego transferido como `<clave,valor>` al **reduce**):
 ```java
       for (String word : WORD_BOUNDARY.split(line)) {
-        if (word.isEmpty()) {
-            continue;
-        }
+            if (word.isEmpty()) {
+                continue;
+            }
             currentWord = new Text(word);
             context.write(currentWord,one);
         }
       }
 ```
 
-El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la palabra y el valor `IntWritable` 1. El *reducer* procesa cada par, añadiendo una unidad al contador de la palabra actual correspondiente a todos los *mappers*. Después, escribe el resultado de esa palabra el objeto de contexto del *reducer* y pasa a la siguiente. Cuanto todos los pares `<clave,valor>` intermedios se han procesado, el trabajo *MapReduce* ha terminado. La aplicación salva entonces los resultados a la ruta de salida correspondiente en el HDFS.
+El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la palabra y el valor `IntWritable` 1. El *reducer* procesa cada par, añadiendo una unidad a un contador para la palabra actual, sabiendo que a él le han pasado todos los valores para la clave que se corresponde a esa palabra. Después, escribirá el resultado de esa palabra en ficheros locales temporales, utilizando de nuevo el objeto de contexto del *reducer*. El mismo *reducer* procesará la siguiente palabra. Cuando todos los pares `<clave,valor>` intermedios se han procesado, el trabajo *MapReduce* ha terminado. La aplicación salva entonces los resultados a la ruta de salida correspondiente en el HDFS.
 ```java
   public static class MiReduce extends Reducer<Text, IntWritable, Text, IntWritable> {
     @Override
@@ -357,12 +357,12 @@ El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la
   }
 ```
 
-Para probar el programa, vamos a utilizar vamos a bajarnos [todas las obras](http://www.gutenberg.org/cache/epub/100/pg100.txt) de Shakespeare del proyecto Gutenberg. Podemos hacer esto mediante cURL o wget, pero hay que tener cuidado de eliminar el carácter de marca de orden de *bytes* ([BOM](http://es.wikipedia.org/wiki/Marca_de_orden_de_bytes_%28BOM%29)). Utilizaremos el siguiente comando:
+Para probar el programa, vamos a bajarnos [todas las obras de Shakespeare](http://www.gutenberg.org/cache/epub/100/pg100.txt) del proyecto Gutenberg. Podemos hacer esto mediante `cURL` o `wget` ([diferencias](http://daniel.haxx.se/docs/curl-vs-wget.html)), pero hay que tener cuidado de eliminar el carácter de marca de orden de *bytes* ([BOM](http://es.wikipedia.org/wiki/Marca_de_orden_de_bytes_%28BOM%29)). Utilizaremos el siguiente comando:
 ```bash
 curl http://www.gutenberg.org/cache/epub/100/pg100.txt | sed -e 's/^\xEF\xBB\xBF//' > pg100.txt
 ```
 
-Como podrás observar, el fichero pesa unos 5MB. Ahora, borramos los ficheros de entrada anteriores y copiamos el fichero descargado con `curl` a nuestra carpeta de entrada en el HDFS:
+Como podrás observar, el fichero pesa unos 5MB. Ahora, borramos los ficheros de entrada anteriores y copiamos el fichero descargado a nuestra carpeta de entrada en el HDFS:
 ```bash
 [cloudera@quickstart ejemplo3]$ hadoop fs -rm input/f*.txt
 15/06/05 07:54:34 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
