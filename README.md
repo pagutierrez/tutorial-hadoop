@@ -410,7 +410,7 @@ Exception in thread "main" org.apache.hadoop.mapred.FileAlreadyExistsException: 
 	at org.apache.hadoop.util.RunJar.main(RunJar.java:136)
 ```
 
-El error viene provocado por que el directorio de salida ya existía. Es necesario eliminarlo, para que se nos permita lanzar el trabajo:
+El error viene provocado por que el directorio de salida ya existía. Es necesario eliminarlo para que *Hadoop* nos permita lanzar el trabajo:
 ```bash
 [cloudera@quickstart ejemplo3]$ hadoop fs -rm -r output
 15/06/05 08:00:40 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
@@ -497,33 +497,35 @@ hadoop fs -cat output/part*
 
 Si hubiese habido otros ficheros en la carpeta de entrada, también se hubieran procesado.
 
-Si abrimos la dirección [http://localhost:8088/cluster](http://localhost:8088/cluster) podremos acceder al *manager* de Hadoop. Desde aquí podemos consultar todos los *logs*, lo cuál es especialmente importante cuando nuestros trabajos no se completan con éxito. Puede que algunos enlaces no se abran correctamente (al estar accediendo por `localhost`). Si esto sucede, sustituye `quickstart.cloudera` en la barra de navegación por `192.168.56.101` y no deberías tener problema.
+Si abrimos la dirección <http://localhost:8088/cluster> podremos acceder al *manager* de Hadoop. Desde aquí podemos consultar todos los *logs*, lo cuál es especialmente importante cuando nuestros trabajos no se completan con éxito. Puede que algunos enlaces no se abran correctamente (al estar accediendo por `localhost`). Si esto sucede, sustituye `quickstart.cloudera` en la barra de navegación por `192.168.56.101` y no deberías tener problema. También puedes añadir una línea a tu `/etc/hosts` para que `quickstart.cloudera` se resuelva como `192.168.56.101` o simplemente abrir el enlace desde el navegador web de la máquina virtual.
+
+## Ejercicio 1
+
+Ejecuta el ejemplo anterior y guarda el fichero de salida generado.
+
+Debes entregar el fichero de salida (`part-*`).
 
 
 ## Escribiendo nuestros propios *mappers* y *reducers*
 
 A la hora de escribir nuestras propias aplicaciones *MapReduce*, tenemos dos opciones:
 
-1. Utilizar el entorno de desarrollo de la máquina virtual. Como ya hemos comentado, contiene Eclipse. Prueba a abrirlo y verás que viene un programa de ejemplo *MapReduce*, similar al que ya hemos visto, pero donde se han generado cuatros clases:
+1. Utilizar el entorno de desarrollo de la máquina virtual. Como ya hemos comentado, contiene Eclipse. Prueba a abrirlo y verás que viene un programa de ejemplo *MapReduce*, similar al que ya hemos visto, pero donde se han generado las clases en cuatro ficheros:
     * el *Driver* (o programa principal que ejecuta el trabajo),
     * el *Map*,
     * el *Reduce*,
-    * y un Test para realizar pruebas unitarias utilizando JUnit.
+    * y un *Test* para realizar pruebas unitarias utilizando `JUnit`.
 
-2. Utilizar el anfitrión como entorno de desarrollo, haciendo uso de la conexión `sftp://` de o las carpetas compartidas de VirtualBox para luego subir el fichero `.jar`. Si así lo hacemos, podemos utilizar cualquier entorno de desarrollo para Java (Eclipse, NetBeans o el que prefieras).
+2. Utilizar el anfitrión como entorno de desarrollo, haciendo uso de la conexión `sftp://` de o las carpetas compartidas de VirtualBox para luego subir el fichero `.jar`. Si así lo hacemos, podemos utilizar cualquier entorno de desarrollo para Java que tengamos instalado en nuestro anfitrión (Eclipse, NetBeans o el que prefieras).
 
-Si utilizamos Eclipse, el fichero `.jar` lo podemos generar pulsando el botón derecho del ratón sobre el nombre del proyecto y luego `Java->JAR file`.
-
-## Ejercicio 1
-
-Ejecuta el ejemplo anterior y guarda el fichero de salida generado.
+Si utilizamos Eclipse, podemos generar el fichero `.jar` pulsando el botón derecho del ratón sobre el nombre del proyecto y luego `Java->JAR file`.
 
 ## Ejercicio 2
 
-* El primer ejercicio que debes realizar es escribir un programa *MapReduce* para Hadoop que muestre el número de palabras que empiezan por cada letra. Esto significa que, para cada letra, queremos contar el número de palabras que empiezan por esa letra. Para la implementación, ignora la capitalización, es decir, considera todas las letras en minúscula. Ignora todos los caracteres que no sean alfabéticos, pero incluye los dígitos.
+* El segundo ejercicio a realizar es escribir un programa *MapReduce* para Hadoop que cuente el número de palabras que empiezan por cada letra. Para la implementación, ignora la capitalización, es decir, considera todas las letras en minúscula. Ignora todos los caracteres que no sean alfabéticos, pero incluye los dígitos.
 * Ejecuta el programa desarrollado sobre la misma entrada (conjunto de obras de Shakespeare).
 
-Debes entregar el fichero de salida y el código fuente generado (solo los `.java`).
+Debes entregar el fichero de salida generado (`part-*`) y el código fuente (solo los `.java`).
 
 ## Algunos aspectos adicionales
 
