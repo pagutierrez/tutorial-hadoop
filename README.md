@@ -126,13 +126,13 @@ Found 2 items
 28
 ```
 
-¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba? Pronto volveremos con ello.
+*¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba?*.
 
 Analicemos mejor el código de [`Null.java`](code/ejemplo1/Null.java). Al especificar un trabajo *MapReduce* tenemos que incluir los siguientes elementos:
 
 > job.setInputFormatClass(TextInputFormat.class);
 
-Esto especifica el formato de entrada. En este caso, hemos usado `TextInputFormat` que es una clase que representa datos de tipo texto y que considera cada línea del fichero como un registro invocando, por tanto, la función **map** del programa por cada línea. Al invocar a **map**, le pasaremos como clave el *offset* (desplazamiento) dentro del fichero correspondiente al principio de la línea. El tipo de la clave será `LongWritable`: `Writable` es el tipo *serializable* que usa *MapReduce* para gestionar todos los datos, que en este caso son de tipo `long`. Como valor, al invocar a **map** pasaremos el contenido de la línea (de tipo `Text`, la versión `Writable` de un `String`).
+Esto especifica el formato de entrada. En este caso, hemos usado `TextInputFormat` que es una clase que representa datos de tipo texto y que considera cada línea del fichero como un registro invocando, por tanto, la función **map** del programa por cada línea. Al invocar a **map**, le pasaremos como clave el *offset* (desplazamiento) dentro del fichero correspondiente al principio de la línea. El tipo de la clave será `LongWritable`.dec `Writable` es el tipo *serializable* que usa *MapReduce* para gestionar todos los datos, que en este caso son de tipo `long`. Como valor, al invocar a **map** pasaremos el contenido de la línea (de tipo `Text`, la versión `Writable` de un `String`).
 
 > job.setMapperClass(Mapper.class);
 
@@ -148,7 +148,7 @@ El tipo de datos del valor generado por **map**. Dado que la función **map** us
 
 > job.setPartitionerClass(HashPartitioner.class);
 
-Esta clase es la que vamos a utilizar para realizar las particiones (decidir qué **reduce** se le asigna a cada clave. Por defecto, utilizamos el basado en hash (`hash(key) mod R`).
+Esta clase es la que vamos a utilizar para realizar las particiones (decidir qué **reduce** se le asigna a cada clave). Por defecto, utilizamos el basado en hash (`hash(key) mod R`).
 
 > job.setNumReduceTasks(1);
 
@@ -160,17 +160,17 @@ Con esto se especifica la clase del *reducer*. En este caso, utilizamos el `Redu
 
 > job.setOutputKeyClass(LongWritable.class);
 
-El tipo de datos de la clave generada por **reduce** y por **map**, excepto si se ha especificado uno distinto para **map** usando `setMapOutputKeyClass`. Dado que la función reduce usada copia la clave recibida, es de tipo `LongWritable`.
+El tipo de datos de la clave generada por **reduce** y por **map**, excepto si se ha especificado uno distinto para **map** usando `setMapOutputKeyClass`. Dado que la función **reduce** usada copia la clave recibida, es de tipo `LongWritable`.
 
 > job.setOutputValueClass(Text.class);
 
-El tipo de datos del valor generado por **reduce** y por **map** excepto si se ha especificado uno distinto para **map** usando `setMapValueKeyClass`. Dado que la función reduce usada copia el valor recibido, es de tipo Text.
+El tipo de datos del valor generado por **reduce** y por **map**, excepto si se ha especificado uno distinto para **map** usando `setMapValueKeyClass`. Dado que la función **reduce** usada copia el valor recibido, es de tipo `Text`.
 
 > job.setOutputFormatClass(TextOutputFormat.class);
 
 Este formato de salida es de tipo texto y consiste en la clave y el valor separados, por defecto, por un tabulador (para pasar a texto los valores generados por **reduce**, el entorno de ejecución invoca el método `toString` de las respectivas clases `Writable`).
 
-Modifica el código de `Null.java` para especificar dos *reducers* y ejecútalo analizando la salida producida por el programa.
+*Modifica el código de [`Null.java`](code/ejemplo1/Null.java) para especificar dos *reducers* y ejecútalo analizando la salida producida por el programa.*
 
 Para terminar esta primera toma de contacto, hay que explicar que el mandato hadoop gestiona sus propios argumentos de la línea de comandos (veremos un ejemplo en la siguiente sección). Es necesario separar dentro de los argumentos de la línea de comandos aquellos que corresponden a Hadoop y los que van destinados a la aplicación. La clase `Tool` facilita este trabajo. A continuación, se presenta la nueva versión de la clase [`Null.java`](code/ejemplo2/Null.java) usando este mecanismo.
 
