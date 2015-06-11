@@ -91,15 +91,15 @@ public class Null {
 }
 ```
 
-Lo primero que debes de hacer es crear un directorio, utilizando el CLI de HDFS. Abre una terminal en la máquina virtual (o conéctate por SSH) y escribe:
+Ahora tenemos que crear un directorio en el HDFS, utilizando el CLI de HDFS. Abre una terminal en la máquina virtual (o conéctate por SSH) y escribe:
 ```bash
-    hadoop fs -mkdir input
+hadoop fs -mkdir input
 ```
-El directorio de trabajo por defecto para este usuario es `/users/cloudera`. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros en local (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
+El directorio de trabajo por defecto en el HDFS para este usuario es `/users/cloudera`. Para este primer ejemplo, créate una carpeta `ejemplo1` en el `$HOME` (local) de tu usuario. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
 ```bash
-    hadoop fs -put f*.txt input/
+hadoop fs -put f*.txt input/
 ```
-Comprueba como ha quedado el sistema de ficheros a través de [http://localhost:50070/](http://localhost:50070/).
+Comprueba como ha quedado el sistema de ficheros a través de <http://localhost:50070/>.
 
 Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, en el que se almacenará la salida del trabajo:
 ```bash
@@ -172,7 +172,7 @@ Este formato de salida es de tipo texto y consiste en la clave y el valor separa
 
 *Modifica el código de [`Null.java`](code/ejemplo1/Null.java) para especificar dos *reducers* y ejecútalo analizando la salida producida por el programa.*
 
-Para terminar esta primera toma de contacto, hay que explicar que el mandato hadoop gestiona sus propios argumentos de la línea de comandos (veremos un ejemplo en la siguiente sección). Es necesario separar dentro de los argumentos de la línea de comandos aquellos que corresponden a Hadoop y los que van destinados a la aplicación. La clase `Tool` facilita este trabajo. A continuación, se presenta la nueva versión de la clase [`Null.java`](code/ejemplo2/Null.java) usando este mecanismo.
+Para terminar esta primera toma de contacto, hay que explicar que el mandato **hadoop** gestiona sus propios argumentos de la línea de comandos (veremos un ejemplo en la siguiente sección). Es necesario separar dentro de los argumentos de la línea de comandos aquellos que corresponden a *Hadoop* y los que van destinados a la aplicación. La clase `Tool` facilita este trabajo. A continuación, se presenta la nueva versión de la clase [`Null.java`](code/ejemplo2/Null.java) usando este mecanismo. Trabaja en la carpeta local `$HOME/ejemplo2`.
 
 ```java
 import java.io.IOException;
@@ -210,7 +210,7 @@ public class Null extends Configured implements Tool {
 
 ## ¡Hola mundo! en Hadoop
 
-El WordCount (contador de palabras) es el "¡Hola Mundo!" de Hadoop. Por su sencillez y su idoneidad para ser resuelto con el paradigma *MapReduce*, se utiliza en multitud de tutoriales de iniciación. Ahora vamos a seguir el [tutorial de iniciación a Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial.html) que podemos encontrar en su documentación.
+El **WordCount** (contador de palabras) es el "¡Hola Mundo!" de Hadoop. Por su sencillez y su idoneidad para ser resuelto con el paradigma *MapReduce*, se utiliza en multitud de tutoriales de iniciación. Ahora vamos a seguir el [tutorial de iniciación a Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial.html) que podemos encontrar en su documentación.
 
 En primer lugar, descarga el código de [WordCount.java](code/ejemplo3/WordCount.java). Cópialo en una carpeta `ejemplo3` del `$HOME` de tu usuario `cloudera`.
 
