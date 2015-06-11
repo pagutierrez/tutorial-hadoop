@@ -10,9 +10,9 @@ El tutorial describe como instalar Hadoop, como escribir una primera aplicación
 
 La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtuales que proporciona Cloudera en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para `VMWare`, `KVM` y `VirtualBox`.
 
-El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados** para el SO invitado, según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
+El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest* ** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
 
-La otra opción es, si dispones de un sistema operativo GNU/Linux, instalar Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para las distribuciones más conocidas).
+La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas).
 
 ### Instalación utilizando VirtualBox
 
@@ -21,7 +21,7 @@ La otra opción es, si dispones de un sistema operativo GNU/Linux, instalar Hado
 3. Descomprime la máquina virtual. Está comprimida con *7zip* (puede que necesites [instalarlo](http://www.7-zip.org/)).
 4. Arranca *VirtualBox* y selecciona "Importar servicio virtualizado". Selecciona el archivo OVF ya descomprimido.
 5. Una vez terminada la importación (que llevará un tiempo), debería aparecer la máquina virtual. Vamos a configurar *VirtualBox* para que se cree una red de "solo-anfitrión". `Archivo->Preferencias->Red->Redes solo-anfitrión`. Añádela con los parámetros por defecto. Después, configuramos la máquina virtual para que la use `Botón derecho->Configuración->Red->Adaptador2->Habilitar->Conectado a -> Adaptador solo anfitrión`. De esta forma, podremos acceder por `ssh` a nuestra máquina virtual (utilizando `ssh` o `putty`) a través de la dirección `192.168.56.101` (esta sería la dirección por defecto que se asigna a la red de "solo-anfitrión".
-6. Finalmente, arranca la máquina virtual (paciencia, tarda bastante). Una vez arrancada, deberíamos poder acceder desde el anfitrión a la dirección <http://localhost:8088>, dónde podremos ver la interfaz del administrador de recursos. Podrás ver varios que éste y varios puertos está redirigidos por NAT en el Adaptador 1 de tu máquina virtual.
+6. Finalmente, arranca la máquina virtual (paciencia, tarda bastante). Una vez arrancada, deberíamos poder acceder desde el anfitrión a la dirección <http://localhost:8088>, dónde podremos ver la interfaz del administrador de recursos. Podrás ver que éste y varios puertos están redirigidos por NAT en el Adaptador 1 de tu máquina virtual.
 7. El usuario y contraseña por defecto para Cloudera es:
     - User: `cloudera`
     - Password: `cloudera`
@@ -39,8 +39,8 @@ La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstar
 El sistema de ficheros de Hadoop (HDFS) se puede manejar a través de tres interfaces:
 
 1. Interfaz de línea de comandos, mediante el comando `hadoop fs [opciones]`.
-2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de [http://localhost:50070/](http://localhost:50070/). Ahí podrás ver los ficheros creados y
-3. API de programación.
+2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de <http://localhost:50070/>. Desde esta interfaz podrás acceder al HDFS y a varias opciones asociadas al mismo.
+3. El API de programación.
 
 La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
 
@@ -95,13 +95,13 @@ Lo primero que debes de hacer es crear un directorio, utilizando el CLI de HDFS.
 ```bash
     hadoop fs -mkdir input
 ```
-El directorio de trabajo por defecto para este usuario es `\users\cloudera`. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros en local (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
+El directorio de trabajo por defecto para este usuario es `/users/cloudera`. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros en local (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
 ```bash
     hadoop fs -put f*.txt input/
 ```
 Comprueba como ha quedado el sistema de ficheros a través de [http://localhost:50070/](http://localhost:50070/).
 
-Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, donde quedará la salida del trabajo:
+Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, en el que se almacenará la salida del trabajo:
 ```bash
 javac  -cp `hadoop classpath` *.java  # compilar
 jar cvf Null.jar *.class # crear el JAR
