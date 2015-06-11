@@ -529,7 +529,7 @@ Debes entregar el fichero de salida generado (`part-*`) y el código fuente (sol
 
 ## Algunos aspectos adicionales
 
-Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos *MapReduce*. Tienes una guía bastante breve en el [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
+Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos *MapReduce*. Tienes una guía breve en el [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
 
 ### WordCount V2: configuraciones específicas
 
@@ -546,7 +546,7 @@ import org.apache.hadoop.conf.Configuration;
 ```java
 private boolean sensibleMayusculas = false;
 ```
-* Añadimos un método `setup`. Hadoop llama a este método automáticamente al mandar un trabajo. Este código instancia un objeto de tipo `Configuration`, y después establece el valor de la variable `sensibleMayusculas` al valor de la variable de sistema  `wordcount.case.sensitive` que se supone que ha sido especificada por línea de comandos (valor por defecto `false`).
+* Añadimos un método `setup`. Hadoop llama a este método automáticamente al mandar un trabajo. Este código instancia un objeto de tipo `Configuration`, y después establece el valor de la variable `sensibleMayusculas` al valor de la variable de sistema  `wordcount.mayusculas.sensible` que se supone que ha sido especificada por línea de comandos (valor por defecto `false`).
 ```java
     protected void setup(Mapper.Context context)
       throws IOException,
@@ -577,9 +577,9 @@ hadoop jar wordcount.jar master.sd.WordCount -Dwordcount.mayusculas.sensible=tru
 
 ### MostFrequentNextWord
 
-El fichero [MostFrequentNextWord.java](code/ejemplo5/MostFrequentNextWord.java) muestra una versión del contador de palabras, en la que intentamos contar cuál es la palabra que aparece con más frecuencia detrás de cada palabra. Para ello hacemos un encadenamiento (*chaining*) de dos procesos *MapReduce*, de forma que el primer proceso obtiene el conteo de todas las parejas de palabras que aparecen seguidas y, utilizando el resultado de este conteo, el segundo analiza, para cada palabra, cuál es la palabra que más frecuentemente aparece después.
+El fichero [MostFrequentNextWord.java](code/ejemplo5/MostFrequentNextWord.java) muestra una versión del contador de palabras, en la que establecemos cuál es la palabra que aparece con más frecuencia detrás de cada palabra. Para ello hacemos un encadenamiento (*chaining*) de dos procesos *MapReduce*, de forma que el primer proceso obtiene el conteo de todas las parejas de palabras que aparecen seguidas y, utilizando el resultado de este conteo, el segundo analiza, para cada palabra, cuál es la palabra que aparece después con más frecuencia.
 
-La forma en que se ejecutan dos procesos encadenados de *MapReduce* es utilizar el directorio de salida del primero como directorio de entrada del primero. Lo único que tenemos que hacer es configurar el método `run` para que haya dos trabajos (objetos de la clase `Job`) y especificar un par de clases *MapReduce* para cada trabajo (en nuestro caso, `MiMap`, `MiReduce`, `MiMap2` y `MiReduce2`):
+La forma en que se ejecutan dos procesos encadenados de *MapReduce* es utilizar el directorio de salida del primero como directorio de entrada del primero. Lo único que tenemos que hacer es configurar el método `run` para que haya dos trabajos (dos objetos de la clase `Job`) y especificar un par de clases *MapReduce* para cada trabajo (en nuestro caso, `MiMap`, `MiReduce`, `MiMap2` y `MiReduce2`):
 ```java
 	public int run(String[] args) throws Exception {
 		Job job = Job.getInstance(getConf(), "mostFrequentNextWord-MR1");
@@ -644,7 +644,7 @@ Por su parte, el primer **reduce** simplemente va a combinar los pares `<clave,v
 	}
 ```
 
-La salida del primer proceso **Reduce** se va a generar en el directorio `new Path(args[1])`. Recuerda que la salida generada siempre incluye la clave (en este caso la pareja de palabras separadas por un `-`, un carácter tabulador y el valor (en este caso, el número de veces que aparece la pareja en el texto). Ahora, el segundo proceso **map** va a crear un conjunto de pares `<clave,valor>` dónde, como clave, tendremos cada una de las palabras y, como valor, tendremos la palabra que aparece después un guión `-` y el número de ocurrencias:
+La salida del primer proceso **Reduce** se va a generar en el directorio `new Path(args[1])`. Recuerda que la salida generada siempre incluye la clave (en este caso la pareja de palabras separadas por un `-`), un carácter tabulador y el valor (en este caso, el número de veces que aparece la pareja en el texto). Ahora, el segundo proceso **map** va a crear un conjunto de pares `<clave,valor>` dónde, como clave, tendremos cada una de las palabras y, como valor, tendremos una cadena que incluirá la palabra que aparece después, un guión `-` y el número de ocurrencias:
 ```java
 	public static class MiMap2 extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -844,8 +844,8 @@ Finalmente, podemos comprobar la salida generada con el comando:
 ```
 ## Ejercicio 3
 
-* Escribe un programa *MapReduce* para Hadoop que implemente un algoritmo de recomendación simple para una red social del tipo "Personas que podrías conocer". La idea fundamental es que si dos personas tienen muchos amigos en común, entonces el sistema debería recomendarles ser amigos.
-* Fichero de entrada: Descarga el fichero de [entrada](code/ejercicio3/ejercicio3Datos.zip). El fichero contiene la lista de adyacencia en el siguiente formato:
+* **Objetivo**: Escribe un programa *MapReduce* para Hadoop que implemente un algoritmo de recomendación simple para una red social del tipo "Personas que podrías conocer". La idea fundamental es que si dos personas tienen muchos amigos en común, entonces el sistema debería recomendarles ser amigos.
+* **Fichero de entrada**: Descarga el fichero de [entrada](code/ejercicio3/ejercicio3Datos.zip). El fichero contiene la lista de adyacencia representada por una secuencia de líneas con el siguiente formato:
 
     ```
     <IDUsuario><\t><ListaAmigos>
@@ -853,7 +853,7 @@ Finalmente, podemos comprobar la salida generada con el comando:
 
     dónde `<IDUsuario>` es un entero correspondiente a un único usuario, `<\t>` es un carácter tabulador  y `<ListaAmigos>` es una lista separada por comas de los IDs de los amigos de `<IDUsuario>`. Hágase notar que los amigos son mutuos (es decir, las aristas son no dirigidas): si A es amigo de B, entonces B es amigo de A. Los datos proporcionados son consistentes con esta regla, habiendo un entrada por cada dirección de la arista.
 
-* **Algoritmo**: Vamos a utilizar un algoritmo simple que, por cada usuario U, recomiende `N=10` usuarios que no sean amigos de U pero que tengan el número mayor de amigos en común con U.
+* **Algoritmo**: Vamos a utilizar un algoritmo simple que, por cada usuario `U`, recomiende `N=10` usuarios que no sean amigos de `U` pero que tengan el mayor número de amigos en común con `U`.
 * **Salida**: la salida generada por el programa debería contener una línea por usuario con el siguiente formato:
 
     ```
