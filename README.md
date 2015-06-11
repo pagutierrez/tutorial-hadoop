@@ -221,19 +221,19 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 ```
 
-Esta clase extenderá a la clase `Configured` e implementa la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación *MapReduce*:
+La clase `WordCount` extenderá a la clase `Configured` e implementará la clase de utilidades `Tool`. Haciendo esto, le dices a Hadoop lo que necesita saber para ejecutar tu programa en un objeto de configuración. Luego empleas el `ToolRunner` para ejecutar la aplicación *MapReduce*. Es por ello que vamos a necesitar los siguientes `import`:
 ```java
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 ```
 
-La clase `Logger` manda mensajes de depuración desde las clases **map** y **reduce**. Cuando ejecutas la aplicación, uno de los mensajes estándar de información proporciona la URL que permite rastrear la ejecución del trabajo. Cualquier mensaje pasado al `Logger` se muestra los *logs* del **map** o del **reduce** de tu servidor Hadoop.
+La clase `Logger` manda mensajes de depuración desde las clases **map** y **reduce**. Cuando ejecutas la aplicación, uno de los mensajes estándar de información proporciona la URL que permite rastrear la ejecución del trabajo. Cualquier mensaje pasado al `Logger` se muestra los *logs* del **map** o del **reduce** de tu servidor Hadoop:
 ```java
 import org.apache.log4j.Logger;
 ```
 
-Necesitas la clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación *MapReduce*. Debes extender la clase `Mapper` utilizando tu propia clase para la acción **map** y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`: lo extiendes para crear y personalizar las acciones de tu **reduce**:
+Necesitas la clase `Job` para crear, configurar y ejecutar una instancia de tu aplicación *MapReduce*. Debes extender la clase `Mapper`, especificando tu propia clase para la acción **map**, y añadir las instrucciones específicas de procesado. Lo mismo sucede con el `Reducer`, lo extiendes para crear y personalizar las acciones de tu **reduce**:
 ```java
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -261,7 +261,7 @@ public class WordCount extends Configured implements Tool {
   private static final Logger LOG = Logger.getLogger(WordCount.class);
 ```
 
-El método `main` invoca al `ToolRunner`, que crea y ejecuta una nueva instancia de `WordCount`, pasándole los argumentos de la línea de comandos. Cuando la aplicación ya ha terminado, devuelve un valor entero de estado de terminación, que se pasa al objeto `System` al salir.
+El método `main` invoca al `ToolRunner`, que crea y ejecuta una nueva instancia de `WordCount`, pasándole los argumentos de la línea de comandos. Cuando la aplicación ya ha terminado, devuelve un valor entero de estado de terminación, que se pasa al objeto `System` al salir:
 ```java
   public static void main(String[] args) throws Exception {
     int res = ToolRunner.run(new WordCount(), args);
@@ -274,7 +274,7 @@ El método `run` configura el trabajo (lo que incluye establecer las rutas pasad
   public int run(String[] args) throws Exception {
 ```
 
-Creamos una nueva instancia del objeto `Job`. En este ejemplo utilizamos el método `Configured.getConf()` el objeto de configuración para esta instancia de `WordCount`, y nombramos el objeto del trabajo 'miwordcount':
+Creamos una nueva instancia del objeto `Job`. En este ejemplo utilizamos el método `Configured.getConf()` que devuelve el objeto con la configuración para esta instancia de `WordCount`, y nombramos el objeto del trabajo 'miwordcount':
 ```java
     Job job = Job.getInstance(getConf(), "miwordcount");
 ```
@@ -315,7 +315,7 @@ La clase `MiMap` (que es una extensión de `Mapper`) transforma la entrada `<cla
     private Text word = new Text();
 ```
 
-Creamos un patrón de expresión regular que utilizaremos para transformar cada línea de entrada. El patrón es `\b`, que significa *boundary* de palabra, es decir, espacios, tabuladores y signos de puntuación:
+Creamos un patrón de expresión regular que utilizaremos para transformar cada línea de entrada. El patrón es `\s*\b\s*`, dónde '\b' significa *boundary* de palabra, es decir, espacios, tabuladores y signos de puntuación y los '\s*' son cero o más espacios:
 ```java
     private static final Pattern WORD_BOUNDARY = Pattern.compile("\\s*\\b\\s*");
 ```
