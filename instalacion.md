@@ -122,7 +122,7 @@ Found 2 items
 
 *¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba?*.
 
-Analicemos mejor el código de [`Null.java`](code/ejemplo1/Null.java). Al especificar un trabajo *MapReduce* tenemos que incluir los siguientes elementos:
+En general, al especificar un trabajo *MapReduce* tenemos que incluir los elementos que se enumeran a continuación (en el caso de [`Null.java`](code/ejemplo1/Null.java), muchos no aparecen porque se toman los valores por defecto): 
 
 > job.setInputFormatClass(TextInputFormat.class);
 
