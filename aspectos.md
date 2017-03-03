@@ -36,7 +36,7 @@ private boolean sensibleMayusculas = false;
 ```
 * Además, puedes observar como, en este caso, se ha utilizado el mismo *reducer* para servir de combinador de pares locales:
 ```java
-    job.setReducerClass(MiReduce.class);
+    job.setCombinerClass(MiReduce.class);
 ```
 Compila el ejemplo como hiciste anteriormente. Ahora podrás ejecutar el ejemplo de dos formas. Por defecto, el programa no será sensible a mayúsculas:
 ```bash
