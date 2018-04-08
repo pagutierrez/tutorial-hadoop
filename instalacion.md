@@ -4,7 +4,7 @@
 
 La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtuales que proporciona Cloudera en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para `VMWare`, `KVM` y `VirtualBox`.
 
-El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest* ** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
+El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest*** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
 
 La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas).
 
@@ -122,7 +122,7 @@ Found 2 items
 
 *¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba?*.
 
-En general, al especificar un trabajo *MapReduce* tenemos que incluir los elementos que se enumeran a continuación (en el caso de [`Null.java`](code/ejemplo1/Null.java), muchos no aparecen porque se toman los valores por defecto): 
+En general, al especificar un trabajo *MapReduce* tenemos que incluir los elementos que se enumeran a continuación (en el caso de [`Null.java`](code/ejemplo1/Null.java), muchos no aparecen porque se toman los valores por defecto):
 
 > job.setInputFormatClass(TextInputFormat.class);
 
