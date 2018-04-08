@@ -89,9 +89,8 @@ El sistema de ficheros de Hadoop (HDFS) se puede manejar a través de tres inter
 ```bash
 pedroa@pedroa-laptop ~ $ ssh -N -L 9870:127.0.0.1:9870 bitnami@192.168.0.166
 bitnami@192.168.0.166's password:
-
 ```
-En cualquier caso, desde esta interfaz podrás acceder al HDFS y a varias opciones asociadas al mismo.
+Ahora ya podrás entrar por  <http://localhost:9870/>. En cualquier caso, desde esta interfaz podrás acceder al HDFS y a varias opciones asociadas al mismo.
 3. El API de programación.
 
 La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
@@ -143,17 +142,25 @@ public class Null {
 }
 ```
 
-Ahora tenemos que crear un directorio en el HDFS, utilizando el CLI de HDFS. Abre una terminal en la máquina virtual (o conéctate por SSH) y escribe:
+Ahora tenemos que crear un directorio en el HDFS, utilizando el CLI de HDFS. Abre una sesión en la máquina virtual (desde VirtualBox o conéctate por SSH) y escribe:
 ```bash
 hadoop fs -mkdir input
 ```
-El directorio de trabajo por defecto en el HDFS para este usuario es `/users/cloudera`. Para este primer ejemplo, créate una carpeta `ejemplo1` en el `$HOME` (local) de tu usuario. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
+Para este primer ejemplo, créate una carpeta `ejemplo1` en el `$HOME` (local) de tu usuario. Ahora añade algunos ficheros. Para ello, crea con `gedit` los ficheros (por ejemplo, `f1.txt` y `f2.txt`), añade el texto que quieras y luego cópialos al HDFS con:
 ```bash
 hadoop fs -put f*.txt input/
 ```
-Comprueba como ha quedado el sistema de ficheros a través de <http://localhost:50070/>.
+Comprueba como ha quedado el sistema de ficheros.
 
-Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, en el que se almacenará la salida del trabajo:
+Ahora debes crear el fichero [`Null.java`](code/ejemplo1/Null.java) (en local) y compilar y ejecutar este programa especificando como primer parámetro el nombre de ese directorio y como segundo el nombre de un directorio, que no debe existir previamente, en el que se almacenará la salida del trabajo. Necesitarás el compresor `jar` para crear el ejecutable Java. En el caso de la máquina de Bitnami, tendrás que instalarlo:
+```bash
+bitnami@debian:~$ sudo apt-get install fastjar
+```
+Además, creamos un alias para que podamos usarlo utilizando `jar` (acuérdate de salir y entrar de la sesión después de actualizar el `.bashrc`):
+```bash
+bitnami@debian:~$ echo "alias jar='fastjar'" >> .bashrc
+```
+Compilamos el código, creamos un `jar` y lo ejecutamos en Hadoop:
 ```bash
 javac  -cp `hadoop classpath` *.java  # compilar
 jar cvf Null.jar *.class # crear el JAR
