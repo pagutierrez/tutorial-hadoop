@@ -20,14 +20,14 @@ Una última opción es, si disponéis de un sistema operativo GNU/Linux, instala
 ![Captura](images/bitnami.png)
 
 6. La máquina virtual incluye un adaptador puente, que hace que esté disponible en la misma red en la que estemos conectados. Una vez arrancada, se nos indica la forma de acceder a la máquina virtual. Por ejemplo, si tu ordenador está en la red privada `192.168.0.0`, el cluster Hadoop estará disponible a través de `192.168.0.166`.
-7. Como puedes ver, se puede acceder al cluster Hadoop para su administración utilizando el siguiente usuario y contraseña:
+7. Como puedes ver, se puede acceder al cluster Hadoop para su administración abriendo un navegador en el anfitrión e introduciendo la dirección `http://192.168.0.166` con el siguiente usuario y contraseña:
     - User: `user`
     - Password: la indicada en la imagen anterior.
-8. Además, conviene habilitar el acceso SSH. Para ello, haz un primer *login* con las siguientes credenciales:
+8. Para habilitar el acceso SSH, puedes seguir las instrucciones indicadas en la [web de Bitnami](https://docs.bitnami.com/virtual-machine/faq/#how-to-enable-the-ssh-server). Haz un primer *login* con las siguientes credenciales:
     - User: `bitnami`
     - Password: `bitnami`
 La máquina virtual te solicitará que cambies la contraseña.
-9. Para habilitar el acceso SSH, puedes seguir las instrucciones indicadas en la [web de Bitnami](https://docs.bitnami.com/virtual-machine/faq/#how-to-enable-the-ssh-server). En concreto, deberás escribir los siguientes comandos:
+9.  Después, deberás escribir los siguientes comandos:
 ```bash
 $ sudo rm -f /etc/ssh/sshd_not_to_be_run
 $ sudo systemctl enable ssh
