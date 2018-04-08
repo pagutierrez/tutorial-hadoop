@@ -85,7 +85,13 @@ La máquina virtual instada incluye el siguiente *software* (`cloudera-quickstar
 El sistema de ficheros de Hadoop (HDFS) se puede manejar a través de tres interfaces:
 
 1. Interfaz de línea de comandos, mediante el comando `hadoop fs [opciones]`.
-2. Interfaz web (puerto 50070 del *NameNode*). Puedes acceder a través de <http://localhost:50070/>. Desde esta interfaz podrás acceder al HDFS y a varias opciones asociadas al mismo.
+2. Interfaz web del *NameNode*. En la máquina de Cloudera podrás hacerlo a través de <http://localhost:50070/>. En la máquina Bitnami todos los puertos están deshabilitados por defecto para su acceso desde el anfitrión. La lista de puertos están en [este enlace](https://docs.bitnami.com/virtual-machine/apps/hadoop/#hadoop-ports). Nos interesa el del *NameNode*. Podemis habilitarlo mediante un [túnel SSH](https://docs.bitnami.com/virtual-machine/faq/#how-to-access-a-server-using-an-ssh-tunnel):
+```bash
+pedroa@pedroa-laptop ~ $ ssh -N -L 9870:127.0.0.1:9870 bitnami@192.168.0.166
+bitnami@192.168.0.166's password:
+
+```
+En cualquier caso, desde esta interfaz podrás acceder al HDFS y a varias opciones asociadas al mismo.
 3. El API de programación.
 
 La interfaz de línea de comandos incluye, por ejemplo, los siguientes comandos:
