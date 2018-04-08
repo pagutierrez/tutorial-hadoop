@@ -2,13 +2,65 @@
 
 ## Instalación de Hadoop
 
-La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtuales que proporciona Cloudera en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para `VMWare`, `KVM` y `VirtualBox`.
+La forma más fácil de instalar Hadoop es utilizar alguna de las máquinas virtuales que se encuentran disponibles para su descarga en Internet y que ya tienen todo el entorno configurado.
 
-El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest* ** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
+Por ejemplo, Cloudera proporciona varias máquinas en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales de Clouder (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para `VMWare`, `KVM` y `VirtualBox`. El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest*** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
 
-La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas).
+Por otro lado, Bitnami también proporciona una máquina virtual con Hadoop preinstalado algo más ligera. Puedes descargarla de la [web de Bitnami](https://bitnami.com/stack/hadoop/virtual-machine). En el momento de realizar este tutorial, la última versión es [bitnami-hadoop-3.0.0-2-linux-debian-9-x86_64.ova](https://bitnami.com/redirect/to/183957/bitnami-hadoop-3.0.0-2-linux-debian-9-x86_64.ova). Como puedes observar, se trata de una versión para VirtualBox.
 
-### Instalación utilizando VirtualBox
+Una última opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas). Bitnami también tiene su [instalador](https://bitnami.com/redirect/to/183949/bitnami-hadoop-3.0.0-2-linux-x64-installer.run).
+
+### Instalación de la máquina de Bitnami utilizando VirtualBox
+
+1. [Descarga](https://www.virtualbox.org/wiki/Downloads) e instala *VirtualBox* en tu equipo.
+2. [Descarga](https://bitnami.com/stack/hadoop/virtual-machine) la última versión de la máquina virtual de Cloudera.
+3. Arranca *VirtualBox* y selecciona "Importar servicio virtualizado". Selecciona el archivo OVA que has descargado.
+4. Una vez terminada la importación (que llevará un tiempo), debería aparecer la máquina virtual.
+5. Finalmente, arranca la máquina virtual (paciencia, tarda bastante). Aparecerá una imagen como la siguiente:
+![Captura](/images/2018/04/bitnami.png)
+
+6. La máquina virtual incluye un adaptador puente, que hace que esté disponible en la misma red en la que estemos conectados. Una vez arrancada, se nos indica la forma de acceder a la máquina virtual. Por ejemplo, si tu ordenador está en la red privada `192.168.0.0`, el cluster Hadoop estará disponible a través de `192.168.0.166`.
+7. Como puedes ver, se puede acceder al cluster Hadoop para su administración utilizando el siguiente usuario y contraseña:
+    - User: `user`
+    - Password: la indicada en la imagen anterior.
+8. Además, conviene habilitar el acceso SSH. Para ello, haz un primer *login* con las siguientes credenciales:
+    - User: `bitnami`
+    - Password: `bitnami`
+La máquina virtual te solicitará que cambies la contraseña.
+9. Para habilitar el acceso SSH, puedes seguir las instrucciones indicadas en la [web de Bitnami](https://docs.bitnami.com/virtual-machine/faq/#how-to-enable-the-ssh-server). En concreto, deberás escribir los siguientes comandos:
+```bash
+$ sudo rm -f /etc/ssh/sshd_not_to_be_run
+$ sudo systemctl enable ssh
+$ sudo systemctl start ssh
+```
+10. Ya tienes acceso SSH. Puedes utilizar una conexión `sftp://` desde el navegador para facilitar la interacción con la máquina virtual. Si tu Sistema Operativo anfitrión es GNU/Linux, pulsa `Ctrl+L` y escribe `sftp://bitnami@192.168.0.166/home/bitnami`.
+11. Por otro lado, abre una terminal para interactuar con la máquina y conéctate por SSH:
+```bash
+pedroa@pedroa-laptop ~ $ ssh bitnami@192.168.0.166
+bitnami@192.168.0.166's password:
+Linux debian 4.9.0-6-amd64 #1 SMP Debian 4.9.82-1+deb9u3 (2018-03-02) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+       ___ _ _                   _
+      | _ |_) |_ _ _  __ _ _ __ (_)
+      | _ \ |  _| ' \/ _` | '  \| |
+      |___/_|\__|_|_|\__,_|_|_|_|_|
+
+  *** Welcome to the Bitnami Hadoop 3.0.0-2 ***
+  *** Documentation:  https://docs.bitnami.com/virtual-machine/apps/hadoop/ ***
+  ***                 https://docs.bitnami.com/virtual-machine/ ***
+  *** Bitnami Forums: https://community.bitnami.com/ ***
+Last login: Sat Apr  7 18:02:10 2018
+bitnami@debian:~$
+```
+La máquina virtual instalada incluye una versión mínima de Debian con Hadoop y una versión bastante reducida del JDK de Java.
+
+### Instalación de la máquina de Cloudera utilizando VirtualBox
 
 1. [Descarga](https://www.virtualbox.org/wiki/Downloads) e instala *VirtualBox* en tu equipo.
 2. [Descarga](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html) la última versión de la máquina virtual de Cloudera.
@@ -122,7 +174,7 @@ Found 2 items
 
 *¿Qué relación ves entre el contenido de este fichero y los ficheros de texto usados en la prueba?*.
 
-En general, al especificar un trabajo *MapReduce* tenemos que incluir los elementos que se enumeran a continuación (en el caso de [`Null.java`](code/ejemplo1/Null.java), muchos no aparecen porque se toman los valores por defecto): 
+En general, al especificar un trabajo *MapReduce* tenemos que incluir los elementos que se enumeran a continuación (en el caso de [`Null.java`](code/ejemplo1/Null.java), muchos no aparecen porque se toman los valores por defecto):
 
 > job.setInputFormatClass(TextInputFormat.class);
 
