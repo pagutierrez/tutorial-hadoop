@@ -2,11 +2,11 @@
 
 ## Algunos aspectos adicionales
 
-Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos *MapReduce*. Tienes una guía breve en el [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
+Como se comentó en las diapositivas de clase, existen algunos aspectos adicionales (uso de combinadores, particiones, etc...), que nos pueden servir para mejorar las prestaciones de los procesos *MapReduce*. Tienes una guía breve en el [tutorial Hadoop de Cloudera](https://www.cloudera.com/documentation/other/tutorial/CDH5/topics/ht_mapreduce_if.html). Lee tranquilamente dicha guía para entender mejor estos aspectos.
 
 ### WordCount V2: configuraciones específicas
 
-Este primer ejemplo está extraído del [tutorial Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial/ht_mapreduce_if.html), mencionado anteriormente.
+Este primer ejemplo está extraído del [tutorial Hadoop de Cloudera](https://www.cloudera.com/documentation/other/tutorial/CDH5/topics/ht_mapreduce_if.html), mencionado anteriormente.
 Vamos a utilizar las opciones de configuración de Hadoop para incorporar un parámetro que nos permita elegir si el conteo de palabras va a ser sensible (o no) a mayúsculas. Además, haremos uso de un **combiner** que va a combinar los pares `<clave,valor>` que sean locales al **map** utilizado (incremento de prestaciones).
 
 Consulta el fichero [WordCount.java](code/ejemplo4/WordCount.java). Se han realizado los siguientes cambios:
@@ -167,34 +167,34 @@ Todos estos pares `<clave,valor>` se combinarán y mandarán al segundo **reduce
 La ejecución es similar a la de otros ejemplos. Primero, borramos la carpeta de salida:
 ```bash
 [cloudera@quickstart ejemplo5]$ hadoop fs -rm -r /user/cloudera/output
-15/06/07 10:26:47 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+18/04/08 10:57:21 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
 Deleted /user/cloudera/output
 ```
 Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, lo lanzamos con el siguiente comando, dónde especificamos el directorio de entrada, el intermedio y el directorio de salida:
 ```bash
 [cloudera@quickstart ejemplo5]$ hadoop jar mostFrequentNextWord.jar master.sd.MostFrequentNextWord input intermedio output
-15/06/07 10:28:06 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
-15/06/07 10:28:08 INFO input.FileInputFormat: Total input paths to process : 1
-15/06/07 10:28:08 INFO mapreduce.JobSubmitter: number of splits:1
-15/06/07 10:28:08 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1433695857588_0001
-15/06/07 10:28:09 INFO impl.YarnClientImpl: Submitted application application_1433695857588_0001
-15/06/07 10:28:09 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1433695857588_0001/
-15/06/07 10:28:09 INFO mapreduce.Job: Running job: job_1433695857588_0001
-15/06/07 10:28:32 INFO mapreduce.Job: Job job_1433695857588_0001 running in uber mode : false
-15/06/07 10:28:32 INFO mapreduce.Job:  map 0% reduce 0%
-15/06/07 10:28:44 INFO mapreduce.Job:  map 67% reduce 0%
-15/06/07 10:28:45 INFO mapreduce.Job:  map 100% reduce 0%
-15/06/07 10:28:54 INFO mapreduce.Job:  map 100% reduce 100%
-15/06/07 10:28:55 INFO mapreduce.Job: Job job_1433695857588_0001 completed successfully
-15/06/07 10:28:55 INFO mapreduce.Job: Counters: 49
+18/04/08 10:58:25 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+18/04/08 10:58:26 INFO input.FileInputFormat: Total input paths to process : 1
+18/04/08 10:58:27 INFO mapreduce.JobSubmitter: number of splits:1
+18/04/08 10:58:27 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1523207149655_0006
+18/04/08 10:58:27 INFO impl.YarnClientImpl: Submitted application application_1523207149655_0006
+18/04/08 10:58:27 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1523207149655_0006/
+18/04/08 10:58:27 INFO mapreduce.Job: Running job: job_1523207149655_0006
+18/04/08 10:58:38 INFO mapreduce.Job: Job job_1523207149655_0006 running in uber mode : false
+18/04/08 10:58:38 INFO mapreduce.Job:  map 0% reduce 0%
+18/04/08 10:58:50 INFO mapreduce.Job:  map 67% reduce 0%
+18/04/08 10:58:52 INFO mapreduce.Job:  map 100% reduce 0%
+18/04/08 10:59:16 INFO mapreduce.Job:  map 100% reduce 100%
+18/04/08 10:59:17 INFO mapreduce.Job: Job job_1523207149655_0006 completed successfully
+18/04/08 10:59:17 INFO mapreduce.Job: Counters: 49
 	File System Counters
-		FILE: Number of bytes read=7560110
-		FILE: Number of bytes written=15340925
+		FILE: Number of bytes read=7951394
+		FILE: Number of bytes written=16123493
 		FILE: Number of read operations=0
 		FILE: Number of large read operations=0
 		FILE: Number of write operations=0
-		HDFS: Number of bytes read=5590012
-		HDFS: Number of bytes written=2317892
+		HDFS: Number of bytes read=5858918
+		HDFS: Number of bytes written=2505418
 		HDFS: Number of read operations=6
 		HDFS: Number of large read operations=0
 		HDFS: Number of write operations=2
@@ -202,35 +202,35 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		Launched map tasks=1
 		Launched reduce tasks=1
 		Data-local map tasks=1
-		Total time spent by all maps in occupied slots (ms)=11089
-		Total time spent by all reduces in occupied slots (ms)=7058
-		Total time spent by all map tasks (ms)=11089
-		Total time spent by all reduce tasks (ms)=7058
-		Total vcore-seconds taken by all map tasks=11089
-		Total vcore-seconds taken by all reduce tasks=7058
-		Total megabyte-seconds taken by all map tasks=11355136
-		Total megabyte-seconds taken by all reduce tasks=7227392
+		Total time spent by all maps in occupied slots (ms)=10699
+		Total time spent by all reduces in occupied slots (ms)=20037
+		Total time spent by all map tasks (ms)=10699
+		Total time spent by all reduce tasks (ms)=20037
+		Total vcore-seconds taken by all map tasks=10699
+		Total vcore-seconds taken by all reduce tasks=20037
+		Total megabyte-seconds taken by all map tasks=10955776
+		Total megabyte-seconds taken by all reduce tasks=20517888
 	Map-Reduce Framework
-		Map input records=124787
-		Map output records=479606
-		Map output bytes=6600892
-		Map output materialized bytes=7560110
+		Map input records=147929
+		Map output records=506182
+		Map output bytes=6939024
+		Map output materialized bytes=7951394
 		Input split bytes=126
 		Combine input records=0
 		Combine output records=0
-		Reduce input groups=173394
-		Reduce shuffle bytes=7560110
-		Reduce input records=479606
-		Reduce output records=173394
-		Spilled Records=959212
+		Reduce input groups=187163
+		Reduce shuffle bytes=7951394
+		Reduce input records=506182
+		Reduce output records=187163
+		Spilled Records=1012364
 		Shuffled Maps =1
 		Failed Shuffles=0
 		Merged Map outputs=1
-		GC time elapsed (ms)=223
-		CPU time spent (ms)=6270
-		Physical memory (bytes) snapshot=524898304
-		Virtual memory (bytes) snapshot=3130150912
-		Total committed heap usage (bytes)=434110464
+		GC time elapsed (ms)=624
+		CPU time spent (ms)=6610
+		Physical memory (bytes) snapshot=541319168
+		Virtual memory (bytes) snapshot=3131756544
+		Total committed heap usage (bytes)=498597888
 	Shuffle Errors
 		BAD_ID=0
 		CONNECTION=0
@@ -239,30 +239,30 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		WRONG_MAP=0
 		WRONG_REDUCE=0
 	File Input Format Counters
-		Bytes Read=5589886
+		Bytes Read=5858792
 	File Output Format Counters
-		Bytes Written=2317892
-15/06/07 10:28:56 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
-15/06/07 10:28:56 INFO input.FileInputFormat: Total input paths to process : 1
-15/06/07 10:28:56 INFO mapreduce.JobSubmitter: number of splits:1
-15/06/07 10:28:56 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1433695857588_0002
-15/06/07 10:28:56 INFO impl.YarnClientImpl: Submitted application application_1433695857588_0002
-15/06/07 10:28:56 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1433695857588_0002/
-15/06/07 10:28:56 INFO mapreduce.Job: Running job: job_1433695857588_0002
-15/06/07 10:29:03 INFO mapreduce.Job: Job job_1433695857588_0002 running in uber mode : false
-15/06/07 10:29:03 INFO mapreduce.Job:  map 0% reduce 0%
-15/06/07 10:29:10 INFO mapreduce.Job:  map 100% reduce 0%
-15/06/07 10:29:18 INFO mapreduce.Job:  map 100% reduce 100%
-15/06/07 10:29:18 INFO mapreduce.Job: Job job_1433695857588_0002 completed successfully
-15/06/07 10:29:18 INFO mapreduce.Job: Counters: 49
+		Bytes Written=2505418
+18/04/08 10:59:17 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+18/04/08 10:59:17 INFO input.FileInputFormat: Total input paths to process : 1
+18/04/08 10:59:18 INFO mapreduce.JobSubmitter: number of splits:1
+18/04/08 10:59:18 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1523207149655_0007
+18/04/08 10:59:19 INFO impl.YarnClientImpl: Submitted application application_1523207149655_0007
+18/04/08 10:59:19 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1523207149655_0007/
+18/04/08 10:59:19 INFO mapreduce.Job: Running job: job_1523207149655_0007
+18/04/08 10:59:27 INFO mapreduce.Job: Job job_1523207149655_0007 running in uber mode : false
+18/04/08 10:59:27 INFO mapreduce.Job:  map 0% reduce 0%
+18/04/08 10:59:34 INFO mapreduce.Job:  map 100% reduce 0%
+18/04/08 10:59:41 INFO mapreduce.Job:  map 100% reduce 100%
+18/04/08 10:59:42 INFO mapreduce.Job: Job job_1523207149655_0007 completed successfully
+18/04/08 10:59:42 INFO mapreduce.Job: Counters: 49
 	File System Counters
-		FILE: Number of bytes read=2664686
-		FILE: Number of bytes written=5550069
+		FILE: Number of bytes read=2879750
+		FILE: Number of bytes written=5980197
 		FILE: Number of read operations=0
 		FILE: Number of large read operations=0
 		FILE: Number of write operations=0
-		HDFS: Number of bytes read=2318026
-		HDFS: Number of bytes written=237140
+		HDFS: Number of bytes read=2505552
+		HDFS: Number of bytes written=255405
 		HDFS: Number of read operations=6
 		HDFS: Number of large read operations=0
 		HDFS: Number of write operations=2
@@ -270,35 +270,35 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		Launched map tasks=1
 		Launched reduce tasks=1
 		Data-local map tasks=1
-		Total time spent by all maps in occupied slots (ms)=4557
-		Total time spent by all reduces in occupied slots (ms)=5352
-		Total time spent by all map tasks (ms)=4557
-		Total time spent by all reduce tasks (ms)=5352
-		Total vcore-seconds taken by all map tasks=4557
-		Total vcore-seconds taken by all reduce tasks=5352
-		Total megabyte-seconds taken by all map tasks=4666368
-		Total megabyte-seconds taken by all reduce tasks=5480448
+		Total time spent by all maps in occupied slots (ms)=4600
+		Total time spent by all reduces in occupied slots (ms)=4816
+		Total time spent by all map tasks (ms)=4600
+		Total time spent by all reduce tasks (ms)=4816
+		Total vcore-seconds taken by all map tasks=4600
+		Total vcore-seconds taken by all reduce tasks=4816
+		Total megabyte-seconds taken by all map tasks=4710400
+		Total megabyte-seconds taken by all reduce tasks=4931584
 	Map-Reduce Framework
-		Map input records=173394
-		Map output records=173394
-		Map output bytes=2317892
-		Map output materialized bytes=2664686
+		Map input records=187163
+		Map output records=187163
+		Map output bytes=2505418
+		Map output materialized bytes=2879750
 		Input split bytes=134
 		Combine input records=0
 		Combine output records=0
-		Reduce input groups=19466
-		Reduce shuffle bytes=2664686
-		Reduce input records=173394
-		Reduce output records=19466
-		Spilled Records=346788
+		Reduce input groups=20985
+		Reduce shuffle bytes=2879750
+		Reduce input records=187163
+		Reduce output records=20985
+		Spilled Records=374326
 		Shuffled Maps =1
 		Failed Shuffles=0
 		Merged Map outputs=1
-		GC time elapsed (ms)=97
-		CPU time spent (ms)=4570
-		Physical memory (bytes) snapshot=499331072
-		Virtual memory (bytes) snapshot=3131473920
-		Total committed heap usage (bytes)=425197568
+		GC time elapsed (ms)=76
+		CPU time spent (ms)=4260
+		Physical memory (bytes) snapshot=525778944
+		Virtual memory (bytes) snapshot=3135193088
+		Total committed heap usage (bytes)=368050176
 	Shuffle Errors
 		BAD_ID=0
 		CONNECTION=0
@@ -307,9 +307,9 @@ Después, creamos el `jar` (por ejemplo, utilizando Eclipse) y, una vez creado, 
 		WRONG_MAP=0
 		WRONG_REDUCE=0
 	File Input Format Counters
-		Bytes Read=2317892
+		Bytes Read=2505418
 	File Output Format Counters
-		Bytes Written=237140
+		Bytes Written=255405
 ```
 Finalmente, podemos comprobar la salida generada con el comando:
 ```bash
@@ -342,4 +342,4 @@ Finalmente, podemos comprobar la salida generada con el comando:
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
 
 1. [Introducción a la programación MapReduce en Hadoop](http://laurel.datsi.fi.upm.es/docencia/asignaturas/ppd). Universidad Politécnica de Madrid (UPM).
-2. [Hadoop Tutorial](http://web.stanford.edu/class/cs246/homeworks/tutorial.pdf) Stanford University.
+2. [Hadoop Tutorial](http://snap.stanford.edu/class/cs246-2017/homeworks/hw0/tutorialv3.pdf) Stanford University.

@@ -1,8 +1,19 @@
 # Ejemplo WordCount y primeros ejercicios
 
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Ejemplo WordCount y primeros ejercicios](#ejemplo-wordcount-y-primeros-ejercicios)
+	- [¡Hola mundo! en Hadoop](#hola-mundo-en-hadoop)
+	- [Ejercicio 1](#ejercicio-1)
+	- [Escribiendo nuestros propios *mappers* y *reducers*](#escribiendo-nuestros-propios-mappers-y-reducers)
+	- [Ejercicio 2](#ejercicio-2)
+	- [Referencias](#referencias)
+
+<!-- /TOC -->
+
 ## ¡Hola mundo! en Hadoop
 
-El **WordCount** (contador de palabras) es el "¡Hola Mundo!" de Hadoop. Por su sencillez y su idoneidad para ser resuelto con el paradigma *MapReduce*, se utiliza en multitud de tutoriales de iniciación. Ahora vamos a seguir el [tutorial de iniciación a Hadoop de Cloudera](http://www.cloudera.com/content/cloudera/en/documentation/hadoop-tutorial/CDH5/Hadoop-Tutorial.html) que podemos encontrar en su documentación.
+El **WordCount** (contador de palabras) es el "¡Hola Mundo!" de Hadoop. Por su sencillez y su idoneidad para ser resuelto con el paradigma *MapReduce*, se utiliza en multitud de tutoriales de iniciación.
 
 En primer lugar, descarga el código de [WordCount.java](code/ejemplo3/WordCount.java). Cópialo en una carpeta `ejemplo3` del `$HOME` de tu usuario `cloudera`.
 
@@ -71,18 +82,18 @@ Creamos una nueva instancia del objeto `Job`. En este ejemplo utilizamos el mét
     Job job = Job.getInstance(getConf(), "miwordcount");
 ```
 
-Establecer el `jar`, basándonos en la clase en uso:
+Establecemos el `jar`, basándonos en la clase en uso:
 ```java
     job.setJarByClass(this.getClass());
 ```
 
-Establecer las rutas de entrada y salida para la aplicación. Los ficheros de entrada se guardan en el HDFS y sus rutas se pasan por línea de comandos en tiempo de ejecución:
+Establecemos las rutas de entrada y salida para la aplicación. Los ficheros de entrada se guardan en el HDFS y sus rutas se pasan por línea de comandos en tiempo de ejecución:
 ```java
     FileInputFormat.addInputPath(job, new Path(args[0]));
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
 ```
 
-Establecer la clase para el **map** y para el **reduce**. En este caso, utilizaremos las clases internas `MiMap` y `MiReduce` definidas en la clase:
+Establecemos la clase para el **map** y para el **reduce**. En este caso, utilizaremos las clases internas `MiMap` y `MiReduce` definidas en la clase:
 ```java
     job.setMapperClass(MiMap.class);
     job.setReducerClass(MiReduce.class);
@@ -93,7 +104,7 @@ Utilizamos un objeto `Text` para crear la salida de la clave (palabra que estamo
     job.setOutputValueClass(IntWritable.class);
 ```
 
-Lanzar el trabajo y esperar a que termine. La sintaxis del método es `waitForCompletion(boolean verbose)`. Si pasamos un `true`, el método muestra el progreso de los **map** y **reduce** durante su ejecución. Si pasamos `false`, muestra el progreso hasta que se ejecutan los **map** y **reduce**, pero no después.
+Lanzamos el trabajo y esperar a que termine. La sintaxis del método es `waitForCompletion(boolean verbose)`. Si pasamos un `true`, el método muestra el progreso de los **map** y **reduce** durante su ejecución. Si pasamos `false`, muestra el progreso hasta que se ejecutan los **map** y **reduce**, pero no después.
 
 En Unix, 0 indica éxito y cualquier otra cosa un fallo. Cuando el trabajo termina correctamente, el método devuelve un 0. Cuando falla devuelve un 1:
 ```java
@@ -112,7 +123,7 @@ Creamos un patrón de expresión regular que utilizaremos para transformar cada 
     private static final Pattern WORD_BOUNDARY = Pattern.compile("\\s*\\b\\s*");
 ```
 
-Hadoop invoca al método **map** una vez por cada par `<clave,valor>` de tu entrada de datos. Esto no tiene porque corresponderse necesariamente con los pares `<clave,valor>` intermedios que se pasan al **reducer** (lo normal es que haya muchos más pares intermedios). En el caso que nos ocupa, el método **map** recibe el *offset* del primer carácter de la línea actual como clave, y el objeto `Text` representando a la línea completa como valor. Divide la línea en palabras para crear los pares intermedios, usando para ello el patrón de expresión regular:
+Hadoop invoca al método **map** una vez por cada par `<clave,valor>` de tu entrada de datos (en nuestro caso, hay uo por línea). Esto no tiene porque corresponderse necesariamente con los pares `<clave,valor>` intermedios que se pasan al **reducer** (lo normal es que haya muchos más pares intermedios). En el caso que nos ocupa, el método **map** recibe el *offset* del primer carácter de la línea actual como clave, y el objeto `Text` representando a la línea completa como valor. Divide la línea en palabras para crear los pares intermedios, usando para ello el patrón de expresión regular:
 ```java
     public void map(LongWritable offset, Text lineText, Context context)
         throws IOException, InterruptedException {
@@ -149,17 +160,18 @@ El *mapper* va a crear un par `<clave,valor>` para cada palabra, compuesto de la
   }
 ```
 
-Para probar el programa, vamos a bajarnos [todas las obras de Shakespeare](http://www.gutenberg.org/cache/epub/100/pg100.txt) del proyecto Gutenberg. Podemos hacer esto mediante `cURL` o `wget` ([diferencias](http://daniel.haxx.se/docs/curl-vs-wget.html)), pero hay que tener cuidado de eliminar el carácter de marca de orden de *bytes* ([BOM](http://es.wikipedia.org/wiki/Marca_de_orden_de_bytes_%28BOM%29)). Utilizaremos el siguiente comando:
+Para probar el programa, vamos a bajarnos [todas las obras de Shakespeare](http://www.gutenberg.org/files/100/100-0.txt) del proyecto Gutenberg. Podemos hacer esto mediante `cURL` o `wget` ([diferencias](http://daniel.haxx.se/docs/curl-vs-wget.html)), pero hay que tener cuidado de eliminar el carácter de marca de orden de *bytes* ([BOM](http://es.wikipedia.org/wiki/Marca_de_orden_de_bytes_%28BOM%29)). Utilizaremos el siguiente comando:
 ```bash
-curl http://www.gutenberg.org/cache/epub/100/pg100.txt | sed -e 's/^\xEF\xBB\xBF//' > pg100.txt
+curl http://www.gutenberg.org/files/100/100-0.txt | sed -e 's/^\xEF\xBB\xBF//' > pg100.txt
 ```
 
 Como podrás observar, el fichero pesa unos 5MB. Ahora, borramos los ficheros de entrada anteriores y copiamos el fichero descargado a nuestra carpeta de entrada en el HDFS:
 ```bash
+[cloudera@quickstart ejemplo3]$ ^C
 [cloudera@quickstart ejemplo3]$ hadoop fs -rm input/f*.txt
-15/06/05 07:54:34 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+18/04/08 10:32:10 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
 Deleted input/f1.txt
-15/06/05 07:54:35 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+18/04/08 10:32:10 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
 Deleted input/f2.txt
 [cloudera@quickstart ejemplo3]$ hadoop fs -put pg100.txt input
 ```
@@ -177,8 +189,8 @@ adding: master/sd/WordCount$MiReduce.class(in = 1651) (out= 694)(deflated 57%)
 Ejecutamos el ejemplo:
 ```bash
 [cloudera@quickstart ejemplo3]$ hadoop jar wordcount.jar master.sd.WordCount input output
-15/06/05 07:59:41 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
-15/06/05 07:59:41 WARN security.UserGroupInformation: PriviledgedActionException as:cloudera (auth:SIMPLE) cause:org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/cloudera/output already exists
+18/04/08 10:33:31 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+18/04/08 10:33:32 WARN security.UserGroupInformation: PriviledgedActionException as:cloudera (auth:SIMPLE) cause:org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/cloudera/output already exists
 Exception in thread "main" org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/cloudera/output already exists
 	at org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.checkOutputSpecs(FileOutputFormat.java:146)
 	at org.apache.hadoop.mapreduce.JobSubmitter.checkSpecs(JobSubmitter.java:562)
@@ -205,33 +217,31 @@ Exception in thread "main" org.apache.hadoop.mapred.FileAlreadyExistsException: 
 El error viene provocado por que el directorio de salida ya existía. Es necesario eliminarlo para que *Hadoop* nos permita lanzar el trabajo:
 ```bash
 [cloudera@quickstart ejemplo3]$ hadoop fs -rm -r output
-15/06/05 08:00:40 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+18/04/08 10:34:09 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
 Deleted output
-```
-Ahora ya podemos lanzar el trabajo. Este paso puede tardar bastante dependiendo de la cantidad de memoria RAM de la que disponga tu ordenador. Se nos suministra un resumen de las operaciones realizadas:
-```bash
 [cloudera@quickstart ejemplo3]$ hadoop jar wordcount.jar master.sd.WordCount input output
-15/06/05 08:01:25 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
-15/06/05 08:01:26 INFO input.FileInputFormat: Total input paths to process : 1
-15/06/05 08:01:26 INFO mapreduce.JobSubmitter: number of splits:1
-15/06/05 08:01:26 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1433500865548_0004
-15/06/05 08:01:26 INFO impl.YarnClientImpl: Submitted application application_1433500865548_0004
-15/06/05 08:01:27 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1433500865548_0004/
-15/06/05 08:01:27 INFO mapreduce.Job: Running job: job_1433500865548_0004
-15/06/05 08:01:35 INFO mapreduce.Job: Job job_1433500865548_0004 running in uber mode : false
-15/06/05 08:01:35 INFO mapreduce.Job:  map 0% reduce 0%
-15/06/05 08:01:44 INFO mapreduce.Job:  map 100% reduce 0%
-15/06/05 08:01:52 INFO mapreduce.Job:  map 100% reduce 100%
-15/06/05 08:01:53 INFO mapreduce.Job: Job job_1433500865548_0004 completed successfully
-15/06/05 08:01:53 INFO mapreduce.Job: Counters: 49
+18/04/08 10:34:15 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+18/04/08 10:34:16 INFO input.FileInputFormat: Total input paths to process : 1
+18/04/08 10:34:16 INFO mapreduce.JobSubmitter: number of splits:1
+18/04/08 10:34:16 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1523207149655_0003
+18/04/08 10:34:16 INFO impl.YarnClientImpl: Submitted application application_1523207149655_0003
+18/04/08 10:34:16 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1523207149655_0003/
+18/04/08 10:34:16 INFO mapreduce.Job: Running job: job_1523207149655_0003
+18/04/08 10:34:25 INFO mapreduce.Job: Job job_1523207149655_0003 running in uber mode : false
+18/04/08 10:34:25 INFO mapreduce.Job:  map 0% reduce 0%
+18/04/08 10:34:42 INFO mapreduce.Job:  map 67% reduce 0%
+18/04/08 10:34:46 INFO mapreduce.Job:  map 100% reduce 0%
+18/04/08 10:35:37 INFO mapreduce.Job:  map 100% reduce 100%
+18/04/08 10:35:38 INFO mapreduce.Job: Job job_1523207149655_0003 completed successfully
+18/04/08 10:35:38 INFO mapreduce.Job: Counters: 49
 	File System Counters
-		FILE: Number of bytes read=12291899
-		FILE: Number of bytes written=24804425
+		FILE: Number of bytes read=13085898
+		FILE: Number of bytes written=26392423
 		FILE: Number of read operations=0
 		FILE: Number of large read operations=0
 		FILE: Number of write operations=0
-		HDFS: Number of bytes read=5590012
-		HDFS: Number of bytes written=311091
+		HDFS: Number of bytes read=5858918
+		HDFS: Number of bytes written=341329
 		HDFS: Number of read operations=6
 		HDFS: Number of large read operations=0
 		HDFS: Number of write operations=2
@@ -239,35 +249,35 @@ Ahora ya podemos lanzar el trabajo. Este paso puede tardar bastante dependiendo 
 		Launched map tasks=1
 		Launched reduce tasks=1
 		Data-local map tasks=1
-		Total time spent by all maps in occupied slots (ms)=6382
-		Total time spent by all reduces in occupied slots (ms)=5858
-		Total time spent by all map tasks (ms)=6382
-		Total time spent by all reduce tasks (ms)=5858
-		Total vcore-seconds taken by all map tasks=6382
-		Total vcore-seconds taken by all reduce tasks=5858
-		Total megabyte-seconds taken by all map tasks=6535168
-		Total megabyte-seconds taken by all reduce tasks=5998592
+		Total time spent by all maps in occupied slots (ms)=20147
+		Total time spent by all reduces in occupied slots (ms)=46114
+		Total time spent by all map tasks (ms)=20147
+		Total time spent by all reduce tasks (ms)=46114
+		Total vcore-seconds taken by all map tasks=20147
+		Total vcore-seconds taken by all reduce tasks=46114
+		Total megabyte-seconds taken by all map tasks=20630528
+		Total megabyte-seconds taken by all reduce tasks=47220736
 	Map-Reduce Framework
-		Map input records=124787
-		Map output records=1172174
-		Map output bytes=9947545
-		Map output materialized bytes=12291899
+		Map input records=147929
+		Map output records=1248490
+		Map output bytes=10588912
+		Map output materialized bytes=13085898
 		Input split bytes=126
 		Combine input records=0
 		Combine output records=0
-		Reduce input groups=30254
-		Reduce shuffle bytes=12291899
-		Reduce input records=1172174
-		Reduce output records=30254
-		Spilled Records=2344348
+		Reduce input groups=33428
+		Reduce shuffle bytes=13085898
+		Reduce input records=1248490
+		Reduce output records=33428
+		Spilled Records=2496980
 		Shuffled Maps =1
 		Failed Shuffles=0
 		Merged Map outputs=1
-		GC time elapsed (ms)=101
-		CPU time spent (ms)=7250
-		Physical memory (bytes) snapshot=606945280
-		Virtual memory (bytes) snapshot=3138928640
-		Total committed heap usage (bytes)=522715136
+		GC time elapsed (ms)=107
+		CPU time spent (ms)=8050
+		Physical memory (bytes) snapshot=563924992
+		Virtual memory (bytes) snapshot=3137871872
+		Total committed heap usage (bytes)=399507456
 	Shuffle Errors
 		BAD_ID=0
 		CONNECTION=0
@@ -276,9 +286,9 @@ Ahora ya podemos lanzar el trabajo. Este paso puede tardar bastante dependiendo 
 		WRONG_MAP=0
 		WRONG_REDUCE=0
 	File Input Format Counters
-		Bytes Read=5589886
+		Bytes Read=5858792
 	File Output Format Counters
-		Bytes Written=311091
+		Bytes Written=341329
 
 ```
 
@@ -289,7 +299,7 @@ hadoop fs -cat output/part*
 
 Si hubiese habido otros ficheros en la carpeta de entrada, también se hubieran procesado.
 
-Si abrimos la dirección <http://localhost:8088/cluster> podremos acceder al *manager* de Hadoop. Desde aquí podemos consultar todos los *logs*, lo cuál es especialmente importante cuando nuestros trabajos no se completan con éxito. Puede que algunos enlaces no se abran correctamente (al estar accediendo por `localhost`). Si esto sucede, sustituye `quickstart.cloudera` en la barra de navegación por `192.168.56.101` y no deberías tener problema. También puedes añadir una línea a tu `/etc/hosts` para que `quickstart.cloudera` se resuelva como `192.168.56.101` o simplemente abrir el enlace desde el navegador web de la máquina virtual.
+Si abrimos la dirección <http://localhost:8088/cluster>, podremos acceder al *manager* de Hadoop. Desde aquí podemos consultar todos los *logs*, lo cuál es especialmente importante cuando nuestros trabajos no se completan con éxito. Puede que algunos enlaces no se abran correctamente (al estar accediendo por `localhost`). Si esto sucede, sustituye `quickstart.cloudera` en la barra de navegación por `192.168.56.101` y no deberías tener problema. También puedes añadir una línea a tu `/etc/hosts` para que `quickstart.cloudera` se resuelva como `192.168.56.101` o simplemente abrir el enlace desde el navegador web de la máquina virtual.
 
 ## Ejercicio 1
 
@@ -324,4 +334,4 @@ Debes entregar el fichero de salida generado (`part-*`) y el código fuente (sol
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
 
 1. [Introducción a la programación MapReduce en Hadoop](http://laurel.datsi.fi.upm.es/docencia/asignaturas/ppd). Universidad Politécnica de Madrid (UPM).
-2. [Hadoop Tutorial](http://web.stanford.edu/class/cs246/homeworks/tutorial.pdf) Stanford University.
+2. [Hadoop Tutorial](http://snap.stanford.edu/class/cs246-2017/homeworks/hw0/tutorialv3.pdf) Stanford University.

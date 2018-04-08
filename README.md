@@ -16,4 +16,4 @@ El tutorial describe como instalar Hadoop, como escribir una primera aplicación
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
 
 1. [Introducción a la programación MapReduce en Hadoop](http://laurel.datsi.fi.upm.es/docencia/asignaturas/ppd). Universidad Politécnica de Madrid (UPM).
-2. [Hadoop Tutorial](http://web.stanford.edu/class/cs246/homeworks/tutorial.pdf) Stanford University.
+2. [Hadoop Tutorial](http://snap.stanford.edu/class/cs246-2017/homeworks/hw0/tutorialv3.pdf) Stanford University.

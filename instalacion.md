@@ -1,5 +1,16 @@
 # Instalación de Hadoop y ejecución del MapReduce nulo
 
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Instalación de Hadoop y ejecución del MapReduce nulo](#instalacin-de-hadoop-y-ejecucin-del-mapreduce-nulo)
+	- [Instalación de Hadoop](#instalacin-de-hadoop)
+		- [Instalación utilizando VirtualBox](#instalacin-utilizando-virtualbox)
+	- [Manejo del HDFS](#manejo-del-hdfs)
+	- [El *MapReduce* nulo](#el-mapreduce-nulo)
+	- [Referencias](#referencias)
+
+<!-- /TOC -->
+
 ## Instalación de Hadoop
 
 La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtuales que proporciona Cloudera en su [página web](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cloudera_quickstart_vm.html). Las máquinas virtuales (*Cloudera QuickStart VMs*) traen todo el entorno ya configurado, ahorrando mucho tiempo. Están disponibles para `VMWare`, `KVM` y `VirtualBox`.
@@ -126,7 +137,7 @@ En general, al especificar un trabajo *MapReduce* tenemos que incluir los elemen
 
 > job.setInputFormatClass(TextInputFormat.class);
 
-Esto especifica el formato de entrada. En este caso, hemos usado `TextInputFormat` que es una clase que representa datos de tipo texto y que considera cada línea del fichero como un registro invocando, por tanto, la función **map** del programa por cada línea. Al invocar a **map**, le pasaremos como clave el *offset* (desplazamiento) dentro del fichero correspondiente al principio de la línea. El tipo de la clave será `LongWritable`.dec `Writable` es el tipo *serializable* que usa *MapReduce* para gestionar todos los datos, que en este caso son de tipo `long`. Como valor, al invocar a **map** pasaremos el contenido de la línea (de tipo `Text`, la versión `Writable` de un `String`).
+Esto especifica el formato de entrada. En este caso, hemos usado `TextInputFormat` que es una clase que representa datos de tipo texto y que considera cada línea del fichero como un registro invocando, por tanto, la función **map** del programa por cada línea. Al invocar a **map**, le pasaremos como clave el *offset* (desplazamiento) dentro del fichero correspondiente al principio de la línea. El tipo de la clave será `LongWritable`. `Writable` es el tipo *serializable* que usa *MapReduce* para gestionar todos los datos, que en este caso son de tipo `long`. Como valor, al invocar a **map** pasaremos el contenido de la línea (de tipo `Text`, la versión `Writable` de un `String`).
 
 > job.setMapperClass(Mapper.class);
 
@@ -163,8 +174,6 @@ El tipo de datos del valor generado por **reduce** y por **map**, excepto si se 
 > job.setOutputFormatClass(TextOutputFormat.class);
 
 Este formato de salida es de tipo texto y consiste en la clave y el valor separados, por defecto, por un tabulador (para pasar a texto los valores generados por **reduce**, el entorno de ejecución invoca el método `toString` de las respectivas clases `Writable`).
-
-*Modifica el código de [`Null.java`](code/ejemplo1/Null.java) para especificar dos *reducers* y ejecútalo analizando la salida producida por el programa.*
 
 Para terminar esta primera toma de contacto, hay que explicar que el mandato **hadoop** gestiona sus propios argumentos de la línea de comandos (veremos un ejemplo en la siguiente sección). Es necesario separar dentro de los argumentos de la línea de comandos aquellos que corresponden a *Hadoop* y los que van destinados a la aplicación. La clase `Tool` facilita este trabajo. A continuación, se presenta la nueva versión de la clase [`Null.java`](code/ejemplo2/Null.java) usando este mecanismo. Trabaja en la carpeta local `$HOME/ejemplo2`.
 
@@ -207,4 +216,4 @@ public class Null extends Configured implements Tool {
 Este tutorial se ha realizado basándonos en gran medida en los siguientes tutoriales:
 
 1. [Introducción a la programación MapReduce en Hadoop](http://laurel.datsi.fi.upm.es/docencia/asignaturas/ppd). Universidad Politécnica de Madrid (UPM).
-2. [Hadoop Tutorial](http://web.stanford.edu/class/cs246/homeworks/tutorial.pdf) Stanford University.
+2. [Hadoop Tutorial](http://snap.stanford.edu/class/cs246-2017/homeworks/hw0/tutorialv3.pdf) Stanford University.
