@@ -1,4 +1,15 @@
 # Instalación de Hadoop y ejecución del MapReduce nulo
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Instalación de Hadoop y ejecución del MapReduce nulo](#instalacin-de-hadoop-y-ejecucin-del-mapreduce-nulo)
+	- [Instalación de Hadoop](#instalacin-de-hadoop)
+		- [Instalación de la máquina de Bitnami utilizando VirtualBox](#instalacin-de-la-mquina-de-bitnami-utilizando-virtualbox)
+		- [Instalación de la máquina de Cloudera utilizando VirtualBox](#instalacin-de-la-mquina-de-cloudera-utilizando-virtualbox)
+	- [Manejo del HDFS](#manejo-del-hdfs)
+	- [El *MapReduce* nulo](#el-mapreduce-nulo)
+	- [Referencias](#referencias)
+
+<!-- /TOC -->
 
 ## Instalación de Hadoop
 
