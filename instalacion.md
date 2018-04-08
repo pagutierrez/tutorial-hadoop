@@ -16,11 +16,12 @@ Una última opción es, si disponéis de un sistema operativo GNU/Linux, instala
 2. [Descarga](https://bitnami.com/stack/hadoop/virtual-machine) la última versión de la máquina virtual de Cloudera.
 3. Arranca *VirtualBox* y selecciona "Importar servicio virtualizado". Selecciona el archivo OVA que has descargado.
 4. Una vez terminada la importación (que llevará un tiempo), debería aparecer la máquina virtual.
-5. Finalmente, arranca la máquina virtual (paciencia, tarda bastante). Aparecerá una imagen como la siguiente:
+5. Pulsando el botón derecho, accede a la configuración de la máquina virtual. Corrige la cantidad de memoria RAM y memoria de vídeo para adaptarla a tu equipo.
+6. Finalmente, arranca la máquina virtual (paciencia, tarda bastante). Aparecerá una imagen como la siguiente:
 ![Captura](images/bitnami.png)
 
-6. La máquina virtual incluye un adaptador puente, que hace que esté disponible en la misma red en la que estemos conectados. Una vez arrancada, se nos indica la forma de acceder a la máquina virtual. Por ejemplo, si tu ordenador está en la red privada `192.168.0.0`, el cluster Hadoop estará disponible a través de `192.168.0.166`.
-7. Como puedes ver, se puede acceder al cluster Hadoop para su administración abriendo un navegador en el anfitrión e introduciendo la dirección `http://192.168.0.166` con el siguiente usuario y contraseña:
+7. La máquina virtual incluye un adaptador puente, que hace que esté disponible en la misma red en la que estemos conectados. Una vez arrancada, se nos indica la forma de acceder a la máquina virtual. Por ejemplo, si tu ordenador está en la red privada `192.168.0.0`, el cluster Hadoop estará disponible a través de `192.168.0.166`.
+8. Como puedes ver, se puede acceder al cluster Hadoop para su administración abriendo un navegador en el anfitrión e introduciendo la dirección `http://192.168.0.166` con el siguiente usuario y contraseña:
     - User: `user`
     - Password: la indicada en la imagen anterior.
 8. Para habilitar el acceso SSH, puedes seguir las instrucciones indicadas en la [web de Bitnami](https://docs.bitnami.com/virtual-machine/faq/#how-to-enable-the-ssh-server). Haz un primer *login* con las siguientes credenciales:
