@@ -17,7 +17,7 @@ La forma más fácil de instalar Hadoop es utilizar una de las máquinas virtual
 
 El problema fundamental de dichas máquinas virtuales es que requieren bastante memoria RAM (recomendado un mínimo de **4GB dedicados al *guest*** según Cloudera). Aunque pueden funcionar asignándoles menos memoria, el desempeño se reduce bastante y notarás más esperas.
 
-La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas).
+La otra opción es, si disponéis de un sistema operativo GNU/Linux, instalaros Hadoop. Una forma fácil de realizar la instalación es utilizar *Cloudera manager installer*. El [instalador de Cloudera](http://archive.cloudera.com/cm5/installer/latest/cloudera-manager-installer.bin) debería poder configurar tu equipo de forma fácil (está preparado para bastantes distribuciones conocidas). Además es posible realizar la instalación de forma manual, como se explica en [este tutorial](instalacion_nativa.md).
 
 ### Instalación utilizando VirtualBox
 
