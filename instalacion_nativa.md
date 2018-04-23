@@ -1,3 +1,7 @@
+> Tutorial realizado por:
+> * [Aurora Esteban Toscano](https://github.com/i32estoa)
+> * [Javier Barbero Gómez](https://github.com/javierbg)
+
 # Instalación de Hadoop desde cero
 
 Si bien es posible [utilizar una instalación "precocinada" de Hadoop como Cloudera](instalacion.md), también se puede instalar Hadoop en una máquina ya existente, ya sea física o virtual.
@@ -25,7 +29,7 @@ A menos que se indique lo contrario, el proceso de configuración del sistema se
 
 Para facilitar las conexiones entre las máquinas se les dará un nombre significativo a cada uno de ellas. Idealmente esto se realizaría utilizando DNS, pero para esquemas más sencillos puede configurarse manualmente.
 
-El nombre de host local se puede configurar en el fichero `/etc/hostname` (esto es necesario hacerlo en todas las máquinas). Es aconsejable dar nombres identificativos a cada máquina. Este nombre aparecerá por ejemplo en el prompt al conectarse por SSH a cada máquina.
+El nombre de host local se puede configurar en el fichero `/etc/hostname` (esto es necesario hacerlo en todas las máquinas). Es aconsejable dar nombres identificativos a cada máquina. Este nombre aparecerá por ejemplo en el _prompt_ al conectarse por SSH a cada máquina.
 
 Además es necesario modificar el fichero `/etc/hosts` para indicar las direcciones IP del resto de hosts. Se comentará o eliminará la línea con la IP 127.0.1.1 (con el nombre de host antiguo) y se añadirá una línea por cada uno de los host que contenga su IP y su nombre de host. Por ejemplo, en un caso de direccionamiento estático se añadirían las siguientes líneas:
 
@@ -275,7 +279,6 @@ for node in hadoop-slave1 hadoop-slave2 hadoop-slave3; do
     scp hadoop-*.tar.gz $node:/home/hadoopd;
 done
 
-
 # Conectarse al primer nodo y descomprimir Hadoop
 ssh hadoop-slave1
 tar -xzf hadoop-2.8.3.tar.gz
@@ -288,3 +291,115 @@ for node in hadoop-slave1 hadoop-slave2 hadoop-slave3; do
     scp ~/hadoop/etc/hadoop/* $node:/home/hadoopd/hadoop/etc/hadoop/;
 done
 ```
+
+## Formateo y ejecución de HDFS
+
+HDFS requiere ser formateado, como cualquier otro sistema de ficheros. Para ello, en el nodo maestro lanzamos el comando:
+
+```bash
+hdfs namenode -format
+```
+
+Si todo ha funcionado correctamente deberían aparecer el directorio `~/data` para el usuario `hadoopd`.
+
+### Lanzar y parar el servicio HDFS
+
+Para lanzar el servicio basta con ejecutar el siguiente comando en el nodo maestro:
+
+```bash
+start-dfs.sh
+```
+
+Esto ejecutará el `NameNode` y el `SecondaryNameNode` en `hadoop-master` y un `DataNode` en cada `hadoop-slave`.
+
+Para comprobar que las JVM se están ejecutando en cada nodo puede utilizarse el comando `jps`.
+
+En `hadoop-master` debe imprimir la siguiente información (con distinto PID):
+
+
+```
+21922 Jps
+21603 NameNode
+21787 SecondaryNameNode
+```
+
+
+Y en los `hadoop-slave`:
+
+```
+19728 DataNode
+19819 Jps
+```
+
+Para parar el servicio, ejecutar en el nodo maestro el comando:
+
+```bash
+stop-dfs.sh
+```
+
+### Monitorización del clúster HDFS
+
+Para la monitorización del clúster a través del terminal puede utilizarse el comando `hdfs`:
+
+```bash
+hdfs dfsadmin -report # Informe general del clúster
+hdfs dfsadmin -help # Descripción de los comandos disponibles
+```
+
+Además existe una interfaz web por defecto disponible a través del puerto 50070 (si se ha configurado el nombre de host del maestro como `hadoop-master`: http://hadoop-master:50070).
+
+### Uso del sistema de ficheros
+
+Mientras el sistema está lanzado se puede interactuar con él mediante la línea de comandos. Las órdenes más elementales son:
+
+```bash
+# Todas las rutas son por defecto relativas a /user/<nombre usuario>
+# Crear carpetas
+hdfs dfs -mkdir <ruta remota>
+
+# Enviar archivos (por defecto en /user/<nombre usuario>)
+hdfs dfs -put <lista de ficheros locales> <directorio remoto>
+
+# Mostrar el contenido de un directorio
+hdfs dfs -ls <directorio remoto>
+
+# Descargar archivos
+hdfs dfs -get <archivo remoto> [<ruta local>]
+
+# Imprimir por terminal los contenidos de un archivo
+hdfs dfs -cat <archivo remoto>
+
+# Mostrar ayuda de uso (es muy extensa, así que se pasa por el comando `less`)
+hdfs dfs -help | less
+```
+
+## Ejecución de YARN
+
+HDFS es únicamente el sistema de ficheros utilizado por Apache Hadoop. Para poder lanzar tareas _MapReduce_ en nuestro clúster es necesario hacer uso del servicio YARN. A continuación se explica  cómo activar, monitorizar y hacer uso de este servicio.
+
+### Ejecutar el servicio YARN
+
+De forma similar a HDFS, el servicio YARN se ejecuta con el siguiente comando en el nodo maestro:
+
+```bash
+start-yarn.sh
+```
+
+Para comprobar que el servicio está lanzado se puede volver a utilizar `jps`. En el nodo maestro debería aparecer un `ResourceManager` y en los nodos esclavos un `NodeManager` en cada uno.
+
+Para detener el servicio en todas las máquinas se utiliza el siguiente comando:
+
+```bash
+stop-yarn.sh
+```
+
+### Monitorizar el servicio YARN
+
+YARN ofrece los siguientes comandos para monitorizar el clúster:
+
+```bash
+yarn node -list # Informe de los nodos en funcionamiento
+yarn application -list # Lista de aplicaciones en ejecución
+```
+
+De forma similar a HDFS, existe una interfaz web por defecto disponible a través del puerto 8088 (si se ha configurado el nombre de host del maestro como `hadoop-master`: http://hadoop-master:8088).
